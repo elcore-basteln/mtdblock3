@@ -1,0 +1,54 @@
+#!/bin/sh
+
+# Status LED on/off/flashing
+
+. /etc/ssvconfig/bin/ssvfunction
+. /etc/ssvconfig/bin/ssvhardware
+
+complete()
+{
+	echo "complete $1 $2" >$VPN_STATE_FILE
+	#led1_on
+	ledstat 1 1
+}
+
+up()
+{
+	echo "up" >$VPN_STATE_FILE
+}
+
+start()
+{
+	echo "down" >$VPN_STATE_FILE
+	killall vpn-watch-loop 2>/dev/null && sleep 1
+	/etc/ssvconfig/bin/vpn-watch-loop </dev/null >/dev/null 2>/dev/null &
+	ledstat 1 4
+}
+
+stop()
+{
+	echo "stop" >$VPN_STATE_FILE
+	killall vpn-watch-loop 2>/dev/null
+	#led1_off
+	ledstat 1 0
+}
+
+case "$1" in
+    complete)
+	complete $5 $6
+	;;
+    up)
+	up
+	;;
+    start|down)
+	start
+	;;
+    stop)
+	stop
+	;;
+    *)
+	echo "Usage: $0 {start|stop|complete|up|down}"
+	exit 1
+esac
+
+exit 0

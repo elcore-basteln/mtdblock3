@@ -1,0 +1,21 @@
+#!/bin/sh
+
+#
+# Make a certificate/private key pair using a locally generated
+# root certificate.
+#
+# Explicitly set nsCertType to server using the "server"
+# extension in the openssl.cnf file.
+ppp=$(pwd)
+if test $# -ne 1; then
+        echo "usage: build-key-server <name>";
+        exit 1
+fi                                                                             
+
+if test $KEY_DIR; then
+	cd $KEY_DIR && \
+	$ppp/build-key-my-server $1
+        chmod 0600 $1.key
+else
+	echo you must define KEY_DIR
+fi

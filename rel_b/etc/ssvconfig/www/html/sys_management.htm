@@ -1,0 +1,98 @@
+<html>
+<head>
+<title>System Management</title>
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+<script language="JavaScript" src="../js/wui.functions.js"></script>
+<SCRIPT language="JavaScript"><!--
+function send(command){
+    var doc=document.form;
+	doc.action.value=command;
+	if(command=="cancel"){doc.reset();return;}
+	if(command=="reboot"){
+        send_ajax(command,'Rebooting');
+    }else if(command=="halt"){
+        send_ajax(command,'Shutdown');
+	} else {
+        if (doc.oldpassword.value != "") {
+            if(doc.newpassword.value != doc.password.value){
+                alert ("Error ! Passwords do not match !");
+                return;
+            }
+            if(doc.password.value!="" && doc.password.value.length<8){
+                alert ("Error ! New password must be min 8 signs long !");
+                return;
+            }
+        }
+        /*if (!wui.value.isInRange(doc.auto_halt_time.value,0,10000)){
+            alert("Error ! Auto shutdown. Only numbers between 0..10000 possible!");
+            return;
+        }*/
+        doc.submit();
+    }
+}
+function send_ajax(command, wait){
+    if(!confirm(" Warning ! You are about to " + command + " the system !")) return;
+    wui.draw.boxWait(wait);
+    wui.ajax.dataSend("sys_management.cgi?{#sid#}", 'action='+command, cb);
+}
+function cb(r){
+  jo=eval('('+r+')');
+  switch(jo.action){
+    case "reboot": setTimeout('document.location.href="/index.html";',60000); break;
+    case "halt": wui.draw.boxInfo(2,"Info","System is down!"); break;
+  }
+}
+--></SCRIPT>
+</head>
+<body leftmargin="10" marginwidth="10" topmargin="10" marginheight="10">
+<h3>System</h3>
+
+<table class="t1" cellspacing="0">
+<form name="form" method="post" action="/cgi-bin/sys_management.cgi?{#sid#}">
+<tr>
+<th colspan="3">System management</th>
+</tr>
+<tr>
+<td class="cl">Reboot system :</td>
+<td class="cm"><input type="button" class="br1" onclick="send('reboot')" name="reboot" value="REBOOT"></td>
+<td class="cr">REBOOT will shutdown and restart</td>
+</tr>
+<!--<tr>
+<td class="cl">Halt system :</td>
+<td class="cm"><input type="button" class="br1" onclick="send('halt')" name="halt" value="HALT"></td>
+<td class="cr">HALT will shutdown the system</td>
+</tr>
+<tr>
+<td class="cl">Shutdown automaticly in X hours :</td>
+<td class="cm"><input type="text" class="text" name="auto_halt_time" value="{#auto_halt_time#}" maxlength="2" size="3"> </td>
+<td class="cr" >0 = Disable auto shutdown</td>
+</tr>-->
+<tr class="sp"><td colspan="3"></td></tr>
+<tr>
+<th colspan="3">Change password for console user "root"</th>
+</tr>
+<tr>
+<td class="cl">Old password :</td>
+<td class="cm"><input type="password" class="text" name="oldpassword" maxlength="16" size="16"></td>
+<td class="cr">Enter old password of 'root'</td>
+</tr>
+<tr>
+<td class="cl">New password :</td>
+<td class="cm"><input type="password" class="text" name="newpassword" maxlength="16" size="16"></td>
+<td class="cr">Enter new password for 'root'</td>
+</tr>
+<tr>
+<td class="cl">Confirm new password :</td>
+<td class="cm"><input type="password" class="text" name="password" maxlength="16" size="16"></td>
+<td class="cr">Confirm new password for 'root'</td>
+</tr>
+<tr>
+<td colspan="3">{#response#}<input type="hidden" name="action" value="cancel"></td>
+</tr>
+<tr>
+<td colspan="3"><script language="JavaScript">wui.draw.buttons(1);</script></td>
+</tr>
+</form>
+</table>
+</body>
+</html>

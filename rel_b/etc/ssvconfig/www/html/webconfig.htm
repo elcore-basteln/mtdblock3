@@ -1,0 +1,86 @@
+<html>
+<head>
+<title>WebConfig Administration</title>
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+<script language="JavaScript" src="../js/wui.functions.js"></script>
+<script type="text/javascript">
+function send(command){
+    var doc=document.form;
+    doc.action.value=command;
+	if(command=="cancel"){doc.reset();return;}
+	if(doc.newpassword.value != doc.password.value){
+		alert ("Error ! Passwords do not match !");
+		return;
+	}
+	if(doc.password.value!="" && doc.password.value.length<8){
+		alert ("Error ! New password must be min 8 signs long !");
+		return;
+	}
+	if(!wui.value.isInRange(doc.session_timeout.value, 0, 60)){
+		alert ("Error ! Session timeout. Only numbers between 0..60 possible !");
+		return;
+	}
+	if(!doc.chk_service.checked){
+        if(!confirm(" Warning ! You want dissable the server for web configuration?"))return 0;
+    }
+	doc.submit();
+}
+</script>
+</head>
+<body leftmargin="10" marginwidth="10" topmargin="10" marginheight="10">
+<h3>WebConfig configuration</h3>
+
+<form name="form" method="post" action="/cgi-bin/webconfig.cgi?{#sid#}">
+<table class="t1" cellspacing="0">
+
+<tr>
+<th colspan="3">WebConfig configuration v{#version#}</th>
+</tr>
+<tr id="line0">
+<td class="cl">Enable/Disable service :</td>
+<td class="cm"><div style="float:left;padding-top:4px;"><input type="checkbox" class="checkbox" name="chk_service" value="on" {#chk_service#}></div>
+<div class="status" style="background-image:url(../images/{#status#}.gif)" title="Running/Stopped"></div></td>
+<td class="cr">Enable or disable WebConfig service</td>
+</tr>
+<tr>
+<td class="cl">Port :</td>
+<td class="cm"><input type="text" class="text" name="port" value="{#port#}" maxlength="5" size="5" disabled="disabled"></td>
+<td class="cr">Server port to acces WebConfig</td>
+</tr>
+<tr>
+<td class="cl">Session timeout [minutes]:</td>
+<td class="cm"><input type="text" class="text" name="session_timeout" value="{#session_timeout#}" maxlength="2" size="2"></td>
+<td class="cr">Idle time in minutes, 0 = no time out</td>
+</tr>
+<tr>
+<td class="sp" colspan="3">&nbsp;</td>
+</tr>
+<tr>
+<th colspan="3">Change access password</th>
+</tr>
+<tr>
+<td class="cl">User :<input type="hidden" name="usernumber" value="user1"></td>
+<td class="cm"><input type="text" class="text" name="username" value="{#username#}" maxlength="16" size="16"></td>
+<td class="cr">User name</td>
+</tr>
+<tr>
+<td class="cl">New password :</td>
+<td class="cm"><input type="password" class="text" name="newpassword" maxlength="16" size="16"></td>
+<td class="cr">Enter your newpassword</td>
+</tr>
+<tr>
+<td class="cl">Confirm new password :</td>
+<td class="cm"><input type="password" class="text" name="password" maxlength="16" size="16"></td>
+<td class="cr">Confirm your password</td>
+</tr>
+
+<tr>
+<td colspan="3">{#response#}<input type="hidden" name="action" value="cancel"></td>
+</tr>
+<tr>
+<td colspan="3"><script language="JavaScript">wui.draw.buttons(1);</script></td>
+</tr>
+</table>
+</form>
+</body>
+</html>

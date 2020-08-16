@@ -1,0 +1,23 @@
+# lighttpd configuration file
+server.network-backend = "write"
+dir-listing.activate = "disable"
+server.modules              = ("mod_cgi", "mod_accesslog", "mod_access")
+server.document-root        = "/etc/ssvconfig/www/"
+index-file.names            = ("index.html")
+mimetype.assign             = (
+  ".tgz"          =>      "application/x-tgz",
+  ".gif"          =>      "image/gif",
+  ".css"          =>      "text/css",
+  ".htm"          =>      "text/html",
+  ".html"         =>      "text/html",
+  ".js"           =>      "text/javascript",
+)
+server.port                = 7777
+server.pid-file            = "/var/run/webconfig.pid"
+static-file.exclude-extensions = (".cgi")
+cgi.assign = (".cgi" => "")
+
+#$SERVER["socket"] == ":443" {
+#    ssl.engine = "enable"
+#    ssl.pemfile = "/etc/ssl/lighttpd.pem" 
+#}

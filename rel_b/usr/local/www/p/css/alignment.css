@@ -1,0 +1,38 @@
+@charset "utf-8";
+/* CSS Document */
+
+/**
+ * Alignment
+ *
+ * Ausrichtung von Elementen
+ */
+
+/* Links ausrichten */
+.left{
+	text-align: left;
+}
+
+/* Mittig ausrichten */
+.center{
+	text-align: center;
+}
+
+/* Rechts ausrichten */
+.right{
+	text-align: right;
+}
+
+/* Oben ausrichten */
+.top{
+	vertical-align: top;
+}
+
+/* Vertikal mittig ausrichten */
+.middle{
+	vertical-align: middle;
+}
+
+/* Unten ausrichten */
+.bottom{
+	vertical-align: bottom;
+}

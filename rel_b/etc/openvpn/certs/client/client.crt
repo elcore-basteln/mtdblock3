@@ -1,0 +1,65 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 383 (0x17f)
+    Signature Algorithm: md5WithRSAEncryption
+        Issuer: C=DE, ST=NA, L=munich, O=elcore GmbH/emailAddress=customer-service@elcore.com
+        Validity
+            Not Before: Jul 18 08:46:08 2016 GMT
+            Not After : Jul 13 08:46:08 2036 GMT
+        Subject: C=DE, ST=NA, O=elcore GmbH, CN=client-7-42/emailAddress=customer-service@elcore.com
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (1024 bit)
+                Modulus:
+                    00:ca:14:1f:e3:cc:ca:08:68:2c:7e:8e:e5:18:ec:
+                    1b:2e:51:61:e6:8b:7d:63:a0:83:0a:be:08:d7:38:
+                    fe:cb:73:a6:b3:89:13:d5:c4:48:16:0d:b1:85:e8:
+                    7f:67:0b:59:54:b1:f3:ed:d2:7a:12:c2:44:1c:50:
+                    d5:13:f6:aa:1a:f7:47:43:12:9b:c1:29:41:aa:b3:
+                    03:1e:6a:b8:85:b3:9a:90:33:0b:65:76:57:a1:ca:
+                    88:4d:2a:ba:71:ef:bf:57:4b:7f:b5:d1:5a:ef:2e:
+                    71:e4:90:1c:40:c9:aa:03:df:a2:98:4f:09:36:37:
+                    2a:2e:ad:b9:c5:40:56:fe:1b
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            Netscape Comment: 
+                OpenSSL Generated Certificate
+            X509v3 Subject Key Identifier: 
+                43:ED:21:A0:82:C4:2B:62:5C:67:D5:6A:FF:53:92:05:0B:05:2E:AA
+            X509v3 Authority Key Identifier: 
+                keyid:18:FA:CE:8E:11:63:60:8C:1D:39:FC:83:AC:E4:00:E1:0A:C8:52:9C
+                DirName:/C=DE/ST=NA/L=munich/O=elcore GmbH/emailAddress=customer-service@elcore.com
+                serial:BB:4E:EC:53:3F:A5:42:A6
+
+    Signature Algorithm: md5WithRSAEncryption
+         20:d5:b3:7c:ec:a7:4d:0e:24:2c:8c:64:d7:ba:18:d6:77:00:
+         1a:c8:46:ab:d6:76:8e:0d:79:27:aa:95:7e:a7:14:df:49:64:
+         ee:1b:ec:89:83:a2:cd:38:04:18:4d:0b:dd:5d:0f:09:73:95:
+         f3:ab:56:52:48:41:59:5c:e0:2d:6b:43:9a:fa:26:02:fc:87:
+         24:f9:8b:23:42:83:15:61:9a:61:54:7a:21:d2:47:9f:e9:cd:
+         41:22:70:5c:7b:c3:f6:cb:e8:a7:c0:62:75:0f:1c:13:08:cb:
+         f0:ec:3b:8d:ab:82:c3:0e:fa:98:32:d2:c2:13:22:bb:ad:f3:
+         7a:66
+-----BEGIN CERTIFICATE-----
+MIIDVDCCAr2gAwIBAgICAX8wDQYJKoZIhvcNAQEEBQAwbTELMAkGA1UEBhMCREUx
+CzAJBgNVBAgTAk5BMQ8wDQYDVQQHEwZtdW5pY2gxFDASBgNVBAoTC2VsY29yZSBH
+bWJIMSowKAYJKoZIhvcNAQkBFhtjdXN0b21lci1zZXJ2aWNlQGVsY29yZS5jb20w
+HhcNMTYwNzE4MDg0NjA4WhcNMzYwNzEzMDg0NjA4WjByMQswCQYDVQQGEwJERTEL
+MAkGA1UECBMCTkExFDASBgNVBAoTC2VsY29yZSBHbWJIMRQwEgYDVQQDEwtjbGll
+bnQtNy00MjEqMCgGCSqGSIb3DQEJARYbY3VzdG9tZXItc2VydmljZUBlbGNvcmUu
+Y29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDKFB/jzMoIaCx+juUY7Bsu
+UWHmi31joIMKvgjXOP7Lc6aziRPVxEgWDbGF6H9nC1lUsfPt0noSwkQcUNUT9qoa
+90dDEpvBKUGqswMeariFs5qQMwtldlehyohNKrpx779XS3+10VrvLnHkkBxAyaoD
+36KYTwk2NyourbnFQFb+GwIDAQABo4H9MIH6MAkGA1UdEwQCMAAwLAYJYIZIAYb4
+QgENBB8WHU9wZW5TU0wgR2VuZXJhdGVkIENlcnRpZmljYXRlMB0GA1UdDgQWBBRD
+7SGggsQrYlxn1Wr/U5IFCwUuqjCBnwYDVR0jBIGXMIGUgBQY+s6OEWNgjB05/IOs
+5ADhCshSnKFxpG8wbTELMAkGA1UEBhMCREUxCzAJBgNVBAgTAk5BMQ8wDQYDVQQH
+EwZtdW5pY2gxFDASBgNVBAoTC2VsY29yZSBHbWJIMSowKAYJKoZIhvcNAQkBFhtj
+dXN0b21lci1zZXJ2aWNlQGVsY29yZS5jb22CCQC7TuxTP6VCpjANBgkqhkiG9w0B
+AQQFAAOBgQAg1bN87KdNDiQsjGTXuhjWdwAayEar1naODXknqpV+pxTfSWTuG+yJ
+g6LNOAQYTQvdXQ8Jc5Xzq1ZSSEFZXOAta0Oa+iYC/Ick+YsjQoMVYZphVHoh0kef
+6c1BInBce8P2y+inwGJ1DxwTCMvw7DuNq4LDDvqYMtLCEyK7rfN6Zg==
+-----END CERTIFICATE-----

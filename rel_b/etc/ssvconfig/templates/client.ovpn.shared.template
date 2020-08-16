@@ -1,0 +1,16 @@
+remote {% $SSV_OPENVPN_CLIENT_IP %} {% $SSV_OPENVPN_CLIENT_PORT %}
+dev {% $SSV_OPENVPN_DEV %}0
+ifconfig {% $SSV_OPENVPN_SHARED_IP1 %} {% $SSV_OPENVPN_SERVER_CSUB %}
+proto {% ?SSV_OPENVPN_CLIENT_PROTO%tcp%tcp-client%udp%udp% %}
+{% ?SSV_OPENVPN_CLIENT_PROTO%tcp%;%%% %}ping 30
+{% ?SSV_OPENVPN_CLIENT_PROTO%tcp%;%%% %}ping-restart 60
+;resolv-retry infinite
+nobind
+persist-key
+persist-tun
+{% ?SSV_OPENVPN_CLIENT_COMPR%on%%;%;% %}comp-lzo
+writepid /var/run/openvpn.pid
+verb 3
+mute 20
+cd /etc/openvpn
+secret certs/client/shared.key

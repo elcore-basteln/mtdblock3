@@ -1,0 +1,59 @@
+<html>
+<head>
+<title>Login</title>
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+<script language="JavaScript" src="../js/wui.menu.js"></script>
+<SCRIPT language=JavaScript>
+if (parent.location.href != window.location.href)
+parent.location.href = window.location.href;
+function setzeCurser(){document.form.user.focus();}
+</SCRIPT>
+</head>
+<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" OnLoad="setzeCurser()">
+
+<table width="100%" height="100%">
+
+<tr height="1%">
+<td align="center" valign="top">
+<div class="login_header"><SCRIPT language="JavaScript">document.write(title);</SCRIPT> SSV/WebUI</div>
+</td>
+</tr>
+
+<tr>
+<td align="center" valign="middle">
+<form name="form" method="post" action="/cgi-bin/access.cgi?{#sid#}">
+<table class="t1" style="width:324px;" border="1" width="324" cellspacing="0" cellpadding="0" bgcolor="#DDDDDD">
+
+<tr>
+<th style="text-align:center;">Login</th>
+</tr>
+
+<tr>
+<td class="cm" height="60" style="padding: 5px 0px 0px 50px;">
+<div style="width:250px;height:26px;"><span style="float:left;">User:</span><input type="text" class="text" name="user" size="16" style="float:right;width:170px;"></div>
+<div style="width:250px;height:26px;"><span style="float:left;">Password:</span><input type="password" class="text" name="pass" size="16" style="float:right;width:170px;"></div>
+</td>
+</tr>
+
+<tr>
+<td class="cm" height="50" style="text-align:center;"><input type="submit" class="br1" value="Login" style="float:none;"></td>
+</tr>
+
+<tr class="space">
+<td height="30"><font color="red">{#response#}</font><input type="hidden" name="action" value="login">&nbsp;</td>
+</tr>
+</table>
+</form>
+</td>
+</tr>
+
+<tr height="1%">
+<td align="center" valign="bottom">
+<span class="login_footer">Copyright &copy; 2009 SSV All rights reserved. Build 5543</span>
+</td>
+</tr>
+
+</table>
+
+</body>
+</html>

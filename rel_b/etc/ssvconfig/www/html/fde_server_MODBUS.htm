@@ -1,0 +1,220 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+<script language="JavaScript" src="../js/wui.functions.js"></script>
+<script language="JavaScript" src="../js/json2.js"></script>
+<script language="JavaScript"><!--//
+var jobj = parent.jobj;
+var d = parent.sel_device;
+var c = parent.sel_channel;
+var r = parent.sel_driver;
+var view = parent.view;
+
+
+function set(){
+    switch(view){
+    case 'device':
+        if(document.getElementById("id_MODBUSd15").value == '') {
+            alert("Not all fields are filled!");
+            return;
+        }
+        var a = '';
+        a += document.getElementById("id_MODBUSd10").value;
+        if(document.getElementById("id_MODBUSd10").value == "eth0") {
+            a += ":"+document.getElementById("id_MODBUSd11").value;
+            a += ":"+document.getElementById("id_MODBUSd12").value;
+        }else{
+            a += ":"+document.getElementById("id_MODBUSd21").value;
+            a += ":"+document.getElementById("id_MODBUSd22").value;
+        }
+        a += ":"+document.getElementById("id_MODBUSd13").value;
+        if(document.getElementById("id_MODBUSd14").checked)
+            a += ":w";
+        if (d<0) {  //add
+            var device = new Object();
+            device.name=document.getElementById("id_MODBUSd15").value;
+            device.driver=r.toString();;
+            device.addr=a;
+            device.info=document.getElementById("id_MODBUSd16").value;
+            device.channel = new Array();
+            jobj.data.device.push(device);
+        } else {    //edit
+            jobj.data.device[d].addr = a;
+            jobj.data.device[d].name = document.getElementById("id_MODBUSd15").value;
+            jobj.data.device[d].info = document.getElementById("id_MODBUSd16").value;
+        }
+        parent.device_show();
+        break;
+    case 'channel':
+        if(document.getElementById("id_COMMONc1").value == '' || document.getElementById("id_COMMONc4").value == '' || document.getElementById("id_MODBUSc3").value == '') {
+            alert("Not all fields are filled!");
+            return;
+        }
+        var channel = new Object();
+        channel.name=document.getElementById("id_COMMONc1").value;
+        channel.info=document.getElementById("id_COMMONc2").value;
+        if (document.getElementById("id_MODBUSc2").value == "STR")
+            channel.unit=document.getElementById("id_MODBUSc7").value;
+        else
+            channel.unit=document.getElementById("id_COMMONc3").value;
+        channel.step=document.getElementById("id_COMMONc4").value;
+        channel.dst='-';
+        var a = '';
+        if (document.getElementById("id_MODBUSc1").value != "CST") {
+            a += document.getElementById("id_MODBUSc1").value;
+            a += document.getElementById("id_MODBUSc2").value;
+        }
+        a += document.getElementById("id_MODBUSc3").value; 
+        if (document.getElementById("id_MODBUSc4").value.length > 0) {
+            if (document.getElementById("id_MODBUSc4").value.substr(0,1) != " ")
+                a += " ";
+            a += document.getElementById("id_MODBUSc4").value;
+        }
+        channel.src = a;
+        if (c<0) {//add
+            jobj.data.device[d].channel.push(channel);
+        } else { //edit
+            jobj.data.device[d].channel[c] = channel;
+        }
+        parent.channel_show();
+        break;
+    case 'scan':
+        break;
+    }
+    parent.wui.draw.boxClose();
+}
+function hide(){
+    switch(view){
+    case 'device':
+        document.getElementById("id_MODBUSd01").style.display="none";
+        document.getElementById("id_MODBUSd02").style.display="none";
+        document.getElementById("id_MODBUSd03").style.display="none";
+        document.getElementById("id_MODBUSd04").style.display="none";    
+        if(document.getElementById("id_MODBUSd10").value == "eth0") {
+            document.getElementById("id_MODBUSd01").style.display="table-row";
+            document.getElementById("id_MODBUSd02").style.display="table-row";
+        }else{
+            document.getElementById("id_MODBUSd03").style.display="table-row";
+            document.getElementById("id_MODBUSd04").style.display="table-row";
+        }
+        break;
+    case 'channel':
+        if(document.getElementById("id_MODBUSc1").value == "CST") {
+            document.getElementById("id_MODBUSc01").style.display="none";
+            document.getElementById("id_MODBUSc02").style.display="none";
+        } else {
+            document.getElementById("id_MODBUSc01").style.display="table-row";
+            if(document.getElementById("id_MODBUSc2").value == "STR") {
+                document.getElementById("id_MODBUSc02").style.display="table-row";
+            } else {
+                document.getElementById("id_MODBUSc02").style.display="none";
+            }
+        }
+        break;
+    case 'scan':
+        break;
+    }   
+}
+function init(){
+    document.getElementById(view).style.display="";
+    switch(view){
+    case 'device':
+        if(d<0) return;
+        var a = jobj.data.device[d].addr.split(":");
+        wui.element.set("id_MODBUSd10", a[0]);
+        if(a[0] == "eth0") {
+            wui.element.set("id_MODBUSd11", a[1]);
+            wui.element.set("id_MODBUSd12", a[2]);
+        }else{
+            wui.element.set("id_MODBUSd21", a[1]);
+            wui.element.set("id_MODBUSd22", a[2]);
+        }
+        if(a[3])
+            wui.element.set("id_MODBUSd13", a[3]);
+        else
+            wui.element.set("id_MODBUSd13", "1");
+        if(a[4])
+            document.getElementById("id_MODBUSd14").checked = true;
+        document.getElementById("id_MODBUSd15").value = jobj.data.device[d].name;
+        document.getElementById("id_MODBUSd16").value = jobj.data.device[d].info;
+        break;
+    case 'channel':
+        if(c<0) return;
+        wui.element.set("id_COMMONc1", jobj.data.device[d].channel[c].name);
+        wui.element.set("id_COMMONc2", jobj.data.device[d].channel[c].info);
+        wui.element.set("id_COMMONc3", jobj.data.device[d].channel[c].unit);
+        wui.element.set("id_COMMONc4", jobj.data.device[d].channel[c].step);
+        wui.element.set("id_MODBUSc7", jobj.data.device[d].channel[c].unit);
+        var a = jobj.data.device[d].channel[c].src.split(" ");
+        var s='';
+        for(var i=1; i<a.length;i++) s+=" "+a[i];
+        if (a[0].substr(0,1) == "F") {
+            wui.element.set("id_MODBUSc1", a[0].substr(0,3));
+            wui.element.set("id_MODBUSc2", a[0].substr(3,3));
+            wui.element.set("id_MODBUSc3", a[0].substr(6));
+        } else {
+            wui.element.set("id_MODBUSc1", "CST");
+            wui.element.set("id_MODBUSc3", a[0]);
+        }
+        wui.element.set("id_MODBUSc4", s);
+        break;
+    case 'scan':
+        break;
+    }
+}
+
+//--></script>
+<body onload="init();hide();" bgcolor="#DDDDDD">
+
+<table style="display:none" id="device" class="t2" width="100%">
+<tr><td width="150">Device Name:</td><td><input type="text" class="text" id="id_MODBUSd15" maxlength="15" size="20"></td></tr>
+<tr><td>Description:</td><td><input type="text" class="text" id="id_MODBUSd16" maxlength="63" size="50"></td></tr>
+<tr><td>Device:</td><td><select size="1" id="id_MODBUSd10" onchange="hide()"><option value="ttyAT0">COM1</option><option value="ttyR1">COM2</option><option value="eth0">LAN1</option></select></td></tr>
+<tr id="id_MODBUSd01"><td>IP:</td><td><input id="id_MODBUSd11" type="text" class="text" maxlength="15" size="15"></td></tr>
+<tr id="id_MODBUSd02"><td>Port:</td><td><input id="id_MODBUSd12" type="text" class="text" maxlength="5" size="5"></td></tr>
+<tr id="id_MODBUSd03"><td>Baud rate:</td><td><select id="id_MODBUSd21" size="1"><option value="9600">9600</option><option value="19200">19200</option><option value="38400">38400</option><option value="57600">57600</option><option value="115200">115200</option></select></td></tr>
+<tr id="id_MODBUSd04"><td>Databits, Parity, Stopbits:</td><td><select id="id_MODBUSd22" size="1"><option value="8N1">8N1</option><option value="8N2">8N2</option></td></tr>
+<tr><td>Slave ID:</td><td><input id="id_MODBUSd13" type="text" class="text" maxlength="3" size="3"></td></tr>
+<tr><td> Word swap:</td><td><input id="id_MODBUSd14" value="w" type="checkbox" class="checkbox"></td></tr>
+</table>
+
+<table style="display:none" id="channel" class="t2" width="100%">
+<tr><td width="150">Name:</td><td><input id="id_COMMONc1" type="text" class="text" maxlength="15" size="20"></td></tr>
+<tr><td>Description:</td><td><input id="id_COMMONc2" type="text" class="text" maxlength="63" size="50"></td></tr>
+<tr><td>Unit:</td><td><input id="id_COMMONc3" type="text" class="text" maxlength="7" size="8"></td></tr>
+<tr><td>Read step:</td><td><input id="id_COMMONc4" type="text" class="text" maxlength="3" size="8"></td></tr>
+<tr><td colspan="2"><br></td></tr>
+<tr><td>Function:</td><td>
+<select size="1" id="id_MODBUSc1" onchange="hide()">
+<option value="F01">01 Read Coils
+<option value="F02">02 Read Discrete Inputs
+<option value="F03">03 Read Holding Register
+<option value="F04">04 Read Input Register
+<option value="F05">05 Write Single Coil
+<option value="CST">Constant</select></td></tr>
+<tr id="id_MODBUSc01"><td>Format:</td><td>
+<select size="1" id="id_MODBUSc2" onchange="hide()">
+<option value="U08">U08 Unsigned Char
+<option value="S08">S08 Signed Char
+<option value="U16">U16 Unsigned Short
+<option value="S16">S16 Signed Short
+<option value="U32">U32 Unsigned Long
+<option value="S32">S32 Signed Long
+<option value="U64">U64 Unsigned Double
+<option value="S64">S64 Signed Double
+<option value="FLT">FLT Float
+<option value="STR">STR String</select></td></tr>
+<tr id="id_MODBUSc02"><td>String size:</td><td><input id="id_MODBUSc7" type="text" class="text" maxlength="3" size="8"></td></tr>
+<tr><td>Address:</td><td><input id="id_MODBUSc3" type="text" class="text" maxlength="63" size="50"></td></tr>
+<tr><td>Calc expr.:</td><td><input id="id_MODBUSc4" type="text" class="text" maxlength="63" size="50"></td></tr>
+</table>
+
+<table style="display:none" id="scan" class="t2" width="100%">
+<tr><td>Not supported</td></tr>
+</table>
+
+<input style="margin:20px 10px 0px 0px;" type="button" class="br1" value="OK" onclick="set()">
+<input style="margin:20px 10px 0px 0px;" type="button" class="br1" value="Abort" onclick="parent.wui.draw.boxClose()">
+
+</body>
+</html>

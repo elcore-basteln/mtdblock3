@@ -1,0 +1,65 @@
+#! /bin/sh
+
+. /etc/ssvconfig/bin/ssvfunction
+. /etc/mgmtd.conf
+. /etc/ssvconfig/config/services.cfg
+
+DAEMON=/usr/local/sbin/tmdns
+NAME=tmdns
+DESC="tmdns multicast DNS responder"
+PIDFILE=/var/run/tmdns.pid
+
+#logger -t script.tmdns "started with $1"
+test -f $DAEMON || exit 0
+
+case "$1" in
+    start)
+	[ "$WUI_chk_mgmtd" = "on" ] || exit 0
+        set -e
+        echo -n "Starting $DESC: "
+
+        # Workarround for older kernels with multicast bug
+        if test "$NETDEV" = "eth0"; then
+            if dmesg | head -n1 | grep -q "SSV2006"; then
+                ifconfig $NETDEV promisc
+            fi
+        fi
+
+        ifconfig $NETDEV multicast
+
+        # Set unique hostname for tmdns
+        mac=`ifconfig $NETDEV | sed -ne 's/^.*HWaddr \([0-9A-F:]*\).*$/\1/p' | sed -e 's/://g'`
+        if ! grep "hostname = $mac" </etc/tmdns.conf; then
+            cp /etc/tmdns.conf /tmp/tmdns.conf
+            sed  -e "s/^hostname.*/hostname = $mac/g" /tmp/tmdns.conf >/etc/tmdns.conf
+            rm /tmp/tmdns.conf
+            logger -t script.tmdns "Hostname changed ($mac)"
+        fi
+        start-stop-daemon --start -p $PIDFILE -q -x $DAEMON
+	;;
+    stop)
+        echo -n "Stopping $DESC: "
+        start-stop-daemon --stop -p $PIDFILE -q -x $DAEMON
+        rm -f /var/run/tmdns.pid
+  	;;
+    reload)
+        echo "Reloading $DESC configuration files."
+        kill -SIGHUP `cat /var/run/tmdns.pid`
+  	;;
+        restart|force-reload)
+        #
+        #	If the "reload" option is implemented, move the "force-reload"
+        #	option to the "reload" entry above. If not, "force-reload" is
+        #	just the same as "restart".
+        #
+        $0 stop
+        sleep 1
+        $0 start
+	;;
+    *)
+        echo "Usage: $0 {start|stop|restart|reload|force-reload}" >&2
+        exit 1
+	;;
+esac
+
+exit 0

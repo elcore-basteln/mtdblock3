@@ -1,0 +1,132 @@
+@charset "utf-8";
+/* CSS Document */
+
+/**
+ * Text
+ *
+ * Definition von Textelementen
+ */
+
+/* Standardelemente */
+p{
+	margin-top: 16px;
+	font-size: 15px;
+}
+
+
+
+#content ul, ol{
+	margin-top: 16px;
+	font-size: 15px;
+}
+
+th, td, label, legend, input, select, textarea{
+	font-size: 15px;
+}
+
+#content li{
+	margin-left: 20px;
+}
+
+h1 {
+    margin: 0;
+}
+
+#content h1 {
+    font-size: 1.33em;
+    color: #bd0926;
+    margin-top: 0;
+}
+
+
+h2 {
+    font-size: 1.33em;
+    color: #bd0926;
+    margin-top: 0;
+}
+
+h3 {
+    font-size: 1.06em;
+    margin: 0;
+}
+
+h4 {
+    font-size: 0.8em;
+    margin: 0;
+}
+
+
+
+
+.blue{
+	color: #213376;
+}
+
+.blue a{
+	color: #213376;
+}
+
+.red{
+	color: #df0a10;
+}
+
+.red a{
+	color: #df0a10;
+}
+
+.grey{
+	color: #bfc0c4;
+}
+
+.grey a{
+	color: #grey;
+}
+
+/**
+ * Vordefinierte Klassen
+ */
+ 
+/* Fussnote */
+.footnote{
+	margin-top: 14px;
+	font-size: 10px;
+	color: #969a93;
+}
+
+.footnote.first{
+	margin-top: 0px;
+}
+
+.info{
+	color: #969a93;
+}
+
+/* Zitat */
+.quotation{
+	font-style: italic;
+	color: #969a93;
+}
+
+/* Bildunterschrift */
+.signature{
+	margin-top: 14px;
+	text-align: center;
+	font-size: 10px;
+}
+
+/* Aktion erfolgreich */
+.msg-ok{
+	font-weight: bold;
+	color: #00CC00;
+}
+
+/* Aktion fehlgeschlagen */
+.msg-error{
+	font-weight: bold;
+	color: #FF0000;
+}
+
+/* Markierung */
+.highlight{
+	color: #2382c0;
+}

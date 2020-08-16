@@ -1,0 +1,107 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+<script language="JavaScript" src="../js/wui.functions.js"></script>
+<script language="JavaScript" src="../js/json2.js"></script>
+<script language="JavaScript"><!--//
+var jobj = parent.jobj;
+var d = parent.sel_device;
+var c = parent.sel_channel;
+var r = parent.sel_driver;
+var view = parent.view;
+
+function set(){
+    switch(view){
+    case 'device':
+        if(document.getElementById("id_PLANTd15").value == '') {
+            alert("Not all fields are filled!");
+            return;
+        }
+        if (d<0) {//add
+            var device = new Object();
+            device.name=document.getElementById("id_PLANTd15").value;
+            device.driver=r.toString();;
+            device.info=document.getElementById("id_PLANTd16").value;
+            device.addr=document.getElementById("id_PLANTd17").value;
+            device.channel = new Array();
+            jobj.data.device.push(device);
+        } else {//edit
+            jobj.data.device[d].name = document.getElementById("id_PLANTd15").value;
+            jobj.data.device[d].info = document.getElementById("id_PLANTd16").value;
+            jobj.data.device[d].addr = document.getElementById("id_PLANTd17").value;
+        }
+        parent.device_show();
+        break;
+    case 'channel':
+        if(document.getElementById("id_COMMONc1").value == '' || document.getElementById("id_COMMONc4").value == '' || document.getElementById("id_PLANTc1").value == '') {
+            alert("Not all fields are filled!");
+            return;
+        }
+        var channel = new Object();
+        channel.name=document.getElementById("id_COMMONc1").value;
+        channel.info=document.getElementById("id_COMMONc2").value;
+        channel.unit=document.getElementById("id_COMMONc3").value;
+        channel.step=document.getElementById("id_COMMONc4").value;
+        channel.src = document.getElementById("id_PLANTc1").value;
+        channel.dst='-';
+        if (c<0) {//add
+            jobj.data.device[d].channel.push(channel);
+        } else { //edit
+            jobj.data.device[d].channel[c] = channel;
+        }
+        parent.channel_show();
+        break;
+    case 'scan':
+        break;
+    }
+    parent.wui.draw.boxClose();
+}
+function init(){
+    document.getElementById(view).style.display="";
+    switch(view){
+    case 'device':
+        if(d<0) return;
+        wui.element.set("id_PLANTd15", jobj.data.device[d].name);
+        wui.element.set("id_PLANTd16", jobj.data.device[d].info);
+        wui.element.set("id_PLANTd17", jobj.data.device[d].addr);
+        break;
+    case 'channel':
+        if(c<0) return;
+        wui.element.set("id_COMMONc1", jobj.data.device[d].channel[c].name);
+        wui.element.set("id_COMMONc2", jobj.data.device[d].channel[c].info);
+        wui.element.set("id_COMMONc3", jobj.data.device[d].channel[c].unit);
+        wui.element.set("id_COMMONc4", jobj.data.device[d].channel[c].step);
+        wui.element.set("id_PLANTc1", jobj.data.device[d].channel[c].src);
+        break;
+    case 'scan':
+        break;
+    }
+}
+
+//--></script>
+<body onload="init();" bgcolor="#DDDDDD">
+
+<table style="display:none" id="device" class="t2" width="100%">
+<tr><td width="150">Name:</td><td><input type="text" class="text" id="id_PLANTd15" maxlength="15" size="20"></td>
+<tr><td>Description:</td><td><input type="text" class="text" id="id_PLANTd16" maxlength="63" size="50"></td>
+<tr><td>Address:</td><td><input type="text" class="text" id="id_PLANTd17" maxlength="63" size="50"></td>
+</table>
+
+<table style="display:none" id="channel" class="t2" width="100%">
+<tr><td width="150">Name:</td><td><input id="id_COMMONc1" type="text" class="text" maxlength="15" size="20"></td></tr>
+<tr><td>Description:</td><td><input id="id_COMMONc2" type="text" class="text" maxlength="63" size="50"></td></tr>
+<tr><td>Unit:</td><td><input id="id_COMMONc3" type="text" class="text" maxlength="7" size="8"></td></tr>
+<tr><td>Read step:</td><td><input id="id_COMMONc4" type="text" class="text" maxlength="3" size="8"></td></tr>
+<tr ><td colspan="2"><br></td></tr>
+<tr><td class="cl">Source:</td><td class="cm"><input id="id_PLANTc1" type="text" class="text" maxlength="128" size="50"></td></tr>
+</table>
+
+<table style="display:none" id="scan" class="t2" width="100%">
+<tr><td>Not supported</td></tr>
+</table>
+
+<input style="margin:20px 10px 0px 0px;" type="button" class="br1" value="OK" onclick="set()">
+<input style="margin:20px 10px 0px 0px;" type="button" class="br1" value="Abort" onclick="parent.wui.draw.boxClose()">
+
+</body>
+</html>

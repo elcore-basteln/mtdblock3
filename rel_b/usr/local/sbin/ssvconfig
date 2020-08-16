@@ -1,0 +1,71 @@
+#! /bin/sh
+
+list()
+{
+	echo "List of available configurations CONFIG :"
+	ls -1 /etc/ssvconfig/config
+}
+
+show()
+{
+	[ "x$1" = "x" ] && list
+	cat /etc/ssvconfig/config/$1 2>/dev/null
+}
+
+setv()
+{
+    [ "x$1" = "x" -o "x$2" = "x" -o "x$3" = "x" ] && list 
+    if echo $1 | grep -qe "\.cfg"; then
+        VARIABLE="$2='$3'"
+    else	
+	VARIABLE="$2=\"$3\""
+    fi
+    grep -q ${VARIABLE} /etc/ssvconfig/config/$1 && return
+    cat /etc/ssvconfig/config/$1 | grep -v $2 > /tmp/ssvconfig/$1.$$
+    echo "${VARIABLE}" >> /tmp/ssvconfig/$1.$$
+    mv /tmp/ssvconfig/$1.$$ /etc/ssvconfig/config/$1 && echo "$1: ${VARIABLE}"
+    #echo "DONE"
+}
+
+rem()
+{
+	[ "x$1" = "x" -o "x$2" = "x" ] && list
+	cat /etc/ssvconfig/config/$1 | grep -v $2 > /tmp/ssvconfig/$1.config
+	cp -a /tmp/ssvconfig/$1.config /etc/ssvconfig/config/$1
+	echo "DONE"
+}
+
+reset()
+{
+	[ "x$1" = "x" ] && list
+	cp -a /tmp/ssvconfig/default/$1 /etc/ssvconfig/config/$1
+	echo "DONE"
+}
+
+case "$1" in
+    list)
+	list
+	;;
+    show)
+	show $2
+	;;
+    set)
+	setv $2 $3 $4
+	;;
+    rem)
+	rem $2 $3
+	;;
+    reset)
+	reset $2
+	;;
+    *)
+	echo "Usage:"
+	echo "  list                       List of available configurations CONFIG"
+	echo "  show CONFIG                Show setings of a configfile CONFIG"
+	echo "  set CONFIG VARIABLE VALUE  Overwrite a variable in a configfile"
+	echo "  reset CONFIG               Set one config to default"
+	echo "  rem CONFIG VARIABLE        Remove a variable from a configfile"
+	exit 1
+esac
+
+exit 0

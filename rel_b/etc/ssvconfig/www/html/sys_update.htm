@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>System Firmware</title>
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+<script language="JavaScript" src="../js/json2.js"></script>
+<script language="JavaScript" src="../js/wui.functions.js"></script>
+<SCRIPT language="JavaScript"><!--
+function update(){
+	wui.draw.boxClose();
+	wui.draw.boxOpen(2, "Firmware update", '<img src="/images/wait.gif"><br>Updating ...', 300);
+	window.setTimeout('document.location.href="/cgi-bin/sys_update.cgi?{#sid#}&action=update";',250);
+}
+function init(){
+	wui.draw.boxClose();
+	if ("{#action#}" == "upload") {
+		wui.draw.boxOpen(2, "Firmware update", 'File uploaded, starting Firmware update?<br><br><input type="button" class="bm1" value="Yes" onclick="top.main.update()"> <input type="button" class="bm1" value="No" onclick="wui.draw.boxClose()">', 300);
+	} else if ("{#action#}" == "update") {
+		wui.ajax.dataSend("/cgi-bin/sys_update.cgi?{#sid#}&action=state", "", ajax_cb);
+	}
+}
+function ajax_cb(r) {
+	wui.draw.boxClose();
+	jobj=eval('('+r+')');
+	switch(jobj.status.code){
+	case 0:	wui.draw.boxOpen(2,'Firmware update','<img src="/images/wait.gif"><br>'+jobj.status.info, 300);
+		window.setTimeout('wui.ajax.dataSend("/cgi-bin/sys_update.cgi?{#sid#}&action=state", "", ajax_cb);', 1000);
+		break;
+	case 1:	wui.draw.boxInfo(0,"Firmware update", jobj.status.info);//done
+		break;
+	default:wui.draw.boxInfo(1,"Firmware update", jobj.status.info);//failed
+		break;
+	}
+}
+function send(command){
+	wui.draw.boxOpen(2, "File upload", '<img src="/images/wait.gif"><br>Uploading ...', 300);
+	window.setTimeout('document.form1.submit();',250);
+}
+--></SCRIPT>
+</head>
+<body onload="init()" leftmargin="10" marginwidth="10" topmargin="10" marginheight="10">
+<h3>System</h3>
+
+<table class="t1" cellspacing="0">
+<tr>
+<th colspan="3">Update device Firmware</th>
+</tr>
+<tr>
+<td class="cl">Firmware Version :</td>
+<td class="cm">{#swvers#} (build:{#swbuild#})</td>
+<td class="cr">Current Firmware Version</td>
+</tr>
+<tr>
+<td class="cl">Update firmware :</td>
+<td class="cm">
+<form name="form1" method="post" action="/cgi-bin/sys_update.cgi?{#sid#}&action=upload" enctype="multipart/form-data">
+<input type="file" class="fl1" name="filename" size="42">
+<input type="button" class="br1" onclick="send('upload')" value="Upload">
+</form>
+</td>
+
+<!--
+<td class="cm">
+<form name="form1" method="post" action="/cgi-bin/sys_update.cgi?{#sid#}&action=upload" enctype="multipart/form-data">
+<div class="file" title="Upload">
+<input type="file" id="id_file" name="file" onchange="file_upload();" size="10">
+<input type="submit" name="action" style="visibility:hidden;width:1px;height:1px;float:right;">
+</div>
+</form>
+</td>-->
+<td class="cr">Update system firmware</td>
+</tr>
+
+<tr>
+<td colspan="3">{#response#}<input type="hidden" name="action" value="cancel"></td>
+</tr>
+
+</table>
+</body>
+</html>

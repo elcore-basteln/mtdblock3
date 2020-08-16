@@ -1,0 +1,6 @@
+#!/bin/sh
+
+[ -f '/flash/autoinit.sh' ] || exit 0
+grep -q '!ssv_autoinit' /proc/cmdline && exit 0
+echo 'Running autoinit...'
+exec /flash/autoinit.sh

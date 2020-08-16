@@ -1,0 +1,39 @@
+#!/bin/sh
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin
+DAEMON=/usr/libexec/inetd
+DESC="Internet superserver inetd"
+
+[ -x $DAEMON -a -e /etc/inetd.conf ] || exit 0
+
+case "$1" in
+    start)
+	echo -n "Starting $DESC........................"
+	start-stop-daemon -S -q -x "$DAEMON"
+	echo "done"
+	;;
+    stop)
+	echo -n "Stopping $DESC: "
+	start-stop-daemon -K -q -x "$DAEMON"
+	echo "done."
+	;;
+    reload|force-reload)
+	echo -n "Reloading $DESC: "
+	start-stop-daemon -K -q --signal 1 -x "$DAEMON"
+	echo "done."
+	;;
+    restart)
+	echo -n "Restarting $DESC: "
+	start-stop-daemon -K -q -x "$DAEMON"
+	sleep 1
+	start-stop-daemon -S -q -x "$DAEMON"
+	echo "done."
+	;;
+    *)
+	echo "Usage: /etc/init.d/inetd {start|stop|reload|force-reload|restart}"
+	exit 2
+	;;
+esac
+
+exit 0
+

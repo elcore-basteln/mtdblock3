@@ -1,0 +1,211 @@
+@charset "utf-8";
+/* CSS Document */
+
+/**
+ * Forms
+ *
+ * Definition von Formularelementen
+ */
+
+form{
+	margin-top: 16px;
+}
+
+fieldset{
+	border:none;
+	padding: 0px 10px 5px 0px;
+}
+
+legend, div.legend{
+	margin-top: 12px;
+	font-weight: bold;
+}
+
+label{
+	cursor: pointer;
+	font-size: 15px;
+}
+
+span.label{
+	float: left;
+	clear: left;
+	width: 125px;
+	margin-top: 2px;
+	padding: 5px 5px;
+}
+
+span.label-checkbox{
+	float: left;
+	width: 440px;
+	margin-top: 2px;
+	margin-left:10px;
+	padding: 5px 5px;
+}
+
+#checkbox {
+	float:left;
+	margin: 11px 0 0 14px;
+}
+
+input.checkbox, input.radio{
+	vertical-align: middle;
+	width: auto;
+}
+
+/**
+ * Vordefinierte Formate
+ */
+
+/* Standard */
+input{
+	margin-top: 5px;
+	padding: 1px 1px 1px 3px;
+	height: 19px;
+	border: none;
+	background-color: #ebeced;
+}
+
+select{
+	margin-top: 3px;
+	padding: 0px;
+	height: 18px;
+	border: none;
+	background-color: #ebeced;
+	/*width: 120px !important;*/
+}
+
+
+/*IE 7 Hack for select field*/
+*+html select{
+	margin-top: 2px;
+	height: 45px;
+}
+
+textarea{
+	margin-top: 5px;
+	padding: 1px 1px 1px 3px;
+	background-color: #ebeced;
+	border:none;
+}
+
+/* Extra-Small */
+input.size-xs{ /* -6px */
+	width: 19px;
+}
+
+select.size-xs{
+	width: 25px;
+}
+
+textarea.size-xs{ /* -6px */
+	width: 19px;
+}
+
+/* Small */
+input.size-s{ /* -6px */
+	width: 44px;
+}
+
+select.size-s{
+	width: 50px;
+}
+
+textarea.size-s{ /* -6px */
+	width: 44px;
+}
+
+/* Medium */
+input.size-m{ /* -6px */
+	width: 184px;
+}
+
+select.size-m{
+	width: 190px;
+}
+
+textarea.size-m{ /* -6px */
+	width: 184px;
+}
+
+/* Large */
+input.size-l{ /* -6px */
+	width: 334px;
+}
+
+select.size-l{
+	width: 340px;
+}
+
+textarea.size-l{ /* -6px */
+	width: 334px;
+}
+
+/* Extra-Large */
+input.size-xl{ /* -6px */
+	width: 384px;
+}
+
+select.size-xl{
+	width: 390px;
+}
+
+select.size-choose{
+	width: 106px;
+}
+
+textarea.size-xl{ /* -6px */
+	width: 384px;
+}
+
+
+input.submit{
+	height:auto;
+	cursor:pointer;
+}
+
+/*Wesitespezifische formgestaltung*/
+
+#main_inner form{
+	margin-top: 30px;
+	color:#FFF;
+}
+
+#main_inner label{
+	color:black;
+	width:100px;
+	display:block;
+	float:left;
+	clear:left;
+}
+
+#main_inner input{
+	margin-bottom: 10px;
+}
+
+#content input[type="submit"] {
+	height:auto;
+	cursor:pointer;
+	margin:20px 0px 0px 0px;
+	background-color:#575759;
+	color:#fff;
+    min-width: 100px;
+}
+#content input[type="button"] {
+	height:auto;
+	cursor:pointer;
+	background-color:#575759;
+	color:#fff;
+    min-width: 100px;
+}
+#content input[type="reset"]{
+	height:auto;
+	cursor:pointer;
+	margin:20px 0px 0px 10px;
+	background-color:#575759;
+	color:#fff;	
+}
+
+#content textarea {
+	margin-bottom: 20px;
+}
+

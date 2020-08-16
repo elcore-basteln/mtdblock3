@@ -1,0 +1,13 @@
+#!/bin/sh
+
+. /etc/ssvconfig/config/network
+
+if [ $IFACE = "eth0" ]; then
+    if [ "x$SSV_VI0_ON" = "xon" ]; then
+	ifconfig eth0:0 $SSV_VI0_IP netmask $SSV_VI0_NM up
+    fi
+    if [ "x$SSV_VI1_ON" = "xon" ]; then
+        ifconfig eth0:1 $SSV_VI1_IP netmask $SSV_VI1_NM up
+    fi
+fi
+exit 0

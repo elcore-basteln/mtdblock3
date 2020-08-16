@@ -1,0 +1,15 @@
+dev {% $SSV_OPENVPN_DEV %}0
+ifconfig {% $SSV_OPENVPN_SHARED_IP1 %} {% $SSV_OPENVPN_SERVER_CSUB %}
+proto {% ?SSV_OPENVPN_SERVER_PROTO%tcp%tcp-server%udp%udp% %}
+port {% $SSV_OPENVPN_SERVER_PORT %}
+{% =SSV_OPENVPN_SERVER_PROTO%tcp% %}keepalive 300 1200
+{% =SSV_OPENVPN_SERVER_PROTO%udp% %}keepalive 20 120
+{% ?SSV_OPENVPN_SERVER_COMPR%on%%;%;% %}comp-lzo
+persist-key
+persist-tun
+writepid /var/run/openvpn.pid
+verb 3
+mute 20
+cd /etc/openvpn/certs/server
+cipher BF-CBC
+secret shared.key

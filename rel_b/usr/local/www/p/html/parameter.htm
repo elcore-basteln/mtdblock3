@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../css/root.css" media="all">
+<link rel="icon" type="image/x-icon" href="../css/images/favicon.ico">
+<link rel="shortcut icon" type="image/x-icon" href="../css/images/favicon.ico">
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/wui.functions.js"></script>
+<script type="text/javascript">
+var jds = new Array();
+var sds = new Array();
+jds.d = new Object();
+jds.f = new Object();
+function subscribe(id,v,f) {
+	if (!id || id == "") return;    /* exit if parameter empty */
+	jds.d[id] = v;
+	if(f) jds.f[id] = f;
+}
+function publisch(id) {
+	sds[id]="";
+}
+function init(){
+    $.get("fde_data.cgi?{#sid#}&action=get", ajax_cb);
+}
+function send(){
+    for (var v in sds) {
+	sds[v] = $('[name="'+v+'"]').val();
+	$.get("fde_data.cgi?{#sid#}&action=set&channel="+v+"&value="+sds[v]);
+    }
+}
+function ajax_cb(r) {
+	var o=eval('('+r+')');
+	for (var v in jds.d) {
+		switch(typeof jds.f[v]) {
+		case "function": jds.f[v](o.data[jds.d[v]]); break;
+		case "number": document.getElementById(v).innerHTML = parseFloat(o.data[jds.d[v]]).toFixed(jds.f[v]-1); break;
+		default: document.getElementById(v).innerHTML = o.data[jds.d[v]]; break;
+		}
+	}
+}
+function setbit(id) {
+        var v = document.getElementById(id).value*1;
+        if(v != 0){
+                document.getElementById(id).value = 0;
+        } else {
+                document.getElementById(id).value = 1;
+        }
+        return false;
+}
+function chkval(id, type, min, max) {
+        if (type=='STR') {
+                return true;
+        }
+        var v = document.getElementById(id+'i').value*1;
+        if (isNaN(v)) {
+                document.getElementById(id+'i').value=document.getElementById(id).value;
+                alert("{$config.nan$}");
+                return false;
+        }
+        if (type!='FLT') {
+                v=Math.round(v);
+        }
+        if (v > max || v < min) {
+                document.getElementById(id+'i').value=document.getElementById(id).value;
+                alert("{$config.diff$}, "+min+"..."+max);
+                return false;
+        }
+        document.getElementById(id).value=v;
+        document.getElementById(id+'i').value=v;
+}
+</script>
+<title>{$page.name$}</title>
+</head>
+<body onload="init();">
+<div id="page">
+    <div id="header">
+        <h1><a href="http://www.elcore2400.com"><img src="../css/images/logo.png" /></a></h1>
+    </div>
+    <div id="navigation-top">
+        <ul>
+            <li class="first"><a href="webgui.cgi?{#sid#}&html=overview">{$menu.plant$}</a></li>
+            <li>&nbsp;</li>
+            <li><a href="userconf.cgi?{#sid#}">{$menu.userconf$}</a></li>
+            <li class="last" onmouseout="$('#navigation-top-sub').hide()" onmouseover="$('#navigation-top-sub').show()">
+                <a href="#">{$language$}&nbsp;<img src="../css/images/{#lang#}.png"></a>
+                <div id="navigation-top-sub" class="navigation-top-sub" style="display:none;">
+                <a href="#" onclick="wui.set_lang('{#sid#}','de')"><img src="../css/images/de.png">{$language.de$}</a>
+                <a href="#" onclick="wui.set_lang('{#sid#}','gb')"><img src="../css/images/gb.png">{$language.gb$}</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div id="header-image">
+        <img src="../css/images/header-startpage.jpg" />
+    </div>
+    <div id="page-inner">
+        <div id="navigation-left">
+            <ul>
+		<li class="first"><a href="webgui.cgi?{#sid#}&html=overview">{$menu.overview$}</a></li>
+		<!--<li><a href="webgui.cgi?{#sid#}&html=archive">{$menu.archive$}</a></li>-->
+		<li><a href="webgui.cgi?{#sid#}&html=messages">{$menu.messages$}</a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=parameter"><u>{$menu.config$}</u></a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=data">{$menu.data$}</a></li>
+            </ul>
+        </div>
+        <div id="content" style="padding-top:0px;">
+            <h1>{$menu.config$}</h1>
+	    <h4>{$menu.plant$} {#serial#}</h4>
+            <p>{$config.info$}</p>
+		<br>
+		<span class="label">{$elc.Wartungsbedarf$}</span>
+                <input type="hidden" id="V1" value="" name="elc.Wartungsbedarf" />
+                <input type="checkbox" id="V1i" value="1" onclick="setbit('V1')" />
+                <div class="clear"></div>
+                <script type="text/javascript">
+                subscribe('V1' ,'elc.Wartungsbedarf',
+                        function(v){
+                                $('#V1').val(v);
+                                $('#V1i').prop('checked', (v*1 > 0 ? true:false));
+                        });
+		publisch('elc.Wartungsbedarf');
+                </script>
+		
+		<span class="label">{$elc.TVorlauf_soll$}</span>
+                <input type="hidden" id="V2" value="" name="elc.TVorlauf_soll" />
+                <input type="text" id="V2i" value="" onblur="chkval('V2','S16',10,80);" class="size-s" />
+                <div style="width:80px;display:inline-block;">&nbsp;°C</div>
+                <div class="clear"></div>
+                <script type="text/javascript">
+                subscribe('V2' ,'elc.TVorlauf_soll',
+                        function(v){
+                                var a=parseFloat(v).toFixed(0);
+				$('#V2').val(a);
+                                $('#V2i').val(a);
+                        });
+		publisch('elc.TVorlauf_soll');
+                </script>
+		<br>
+                <span class="label"></span><input name="setup" value="{$config.send$}" type="button" class="submit" onclick="send()"/>
+        </div>
+        
+        <div id="ticker">
+        </div>
+        
+        <div class="clear"></div>
+    </div>
+    <div id="footer">
+        <ul>
+            <li class="first"><a href="access.cgi?{#sid#}&action=logout">{$menu.logout$}</a></li>
+            <li><a href="#"></a></li>
+            <li><a href="#"></a></li>
+            <li class="last"><a href="#"></a></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

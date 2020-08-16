@@ -1,0 +1,24 @@
+{% ?SSV_OPENVPN_SERVER_CMODE%rw%%;%;% %}server {% $SSV_OPENVPN_SERVER_CNET %} {% $SSV_OPENVPN_SERVER_CSUB %}
+{% ?SSV_OPENVPN_SERVER_CMODE%bridge%%;%;% %}server-bridge {% $SSV_OPENVPN_SERVER_SBR %} {% $SSV_OPENVPN_SERVER_CSUB %} {% $SSV_OPENVPN_SERVER_CIP %} {% $SSV_OPENVPN_SERVER_CIP1 %}
+proto {% ?SSV_OPENVPN_SERVER_PROTO%tcp%tcp-server%udp%udp% %}
+port {% $SSV_OPENVPN_SERVER_PORT %}
+dev {% $SSV_OPENVPN_DEV %}0
+{% =SSV_OPENVPN_SERVER_PROTO%tcp% %}keepalive 300 1200
+{% =SSV_OPENVPN_SERVER_PROTO%udp% %}keepalive 20 120
+{% ?SSV_OPENVPN_SERVER_COMPR%on%%;%;% %}comp-lzo
+max-clients 10
+reneg-sec 0
+persist-key
+persist-tun
+writepid /var/run/openvpn.pid
+verb 3
+mute 20
+client-to-client
+;duplicate-cn
+cd /etc/openvpn/certs/server
+cipher BF-CBC
+ca ca.crt
+cert server.crt
+key server.key
+dh dh1024.pem
+client-config-dir /etc/openvpn/ccd

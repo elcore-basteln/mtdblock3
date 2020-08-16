@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# Hardware layer for IGW/922
+
+led1_on()
+{
+	ledstat 1 1	
+	#/usr/local/bin/ssvpio A 08 00
+}
+
+led1_off()
+{
+	ledstat 1 0
+	#/usr/local/bin/ssvpio A 00 08
+}
+
+alarm_on()
+{
+	/usr/local/bin/ssvpio A 04 00
+}
+
+alarm_off()
+{
+	/usr/local/bin/ssvpio A 00 04
+}
+
+modem_on()
+{
+	modem_power 1
+}
+
+modem_off()
+{
+	modem_power 0
+}

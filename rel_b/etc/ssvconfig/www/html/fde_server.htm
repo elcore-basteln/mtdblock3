@@ -1,0 +1,247 @@
+<html>
+<head>
+<title>Field Data Engine Configuration</title>
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+<script language="JavaScript" src="../js/json2.js"></script>
+<script language="JavaScript" src="../js/wui.functions.js"></script>
+<SCRIPT language="JavaScript"><!--//
+var jobj;
+var sel_device=-1;
+var sel_driver=-1;
+var sel_channel=-1;
+var save=false;
+var view=false;
+var sid="{#sid#}";
+
+function init(){
+	wui.ajax.dataSend("/cgi-bin/fde_server.cgi?{#sid#}&action=get.config", "", ajax_cb);
+}
+function send(command){
+	if(command=="cancel") return;
+	wui.draw.boxWait("Sending");
+	save=true;
+	jobj.data.service = wui.element.get("id_service");
+	jobj.data.interval = wui.element.get("id_interval");
+	//jobj.data.loglvl = wui.element.get("id_loglvl");
+	wui.ajax.dataSend("/cgi-bin/fde_server.cgi?{#sid#}&action="+command, JSON.stringify(jobj), ajax_cb);
+}
+function ajax_cb(r) {
+	wui.draw.boxClose();
+	jobj=eval('('+r+')');
+	if(jobj.status.code == 0) {
+		if (save) {
+			wui.draw.boxInfo(0,"Info", jobj.status.info);
+			save=false;
+		}
+	} else {
+		wui.draw.boxInfo(1,"Error", jobj.status.info);
+	}
+	wui.element.set("id_service", jobj.data.service);
+	wui.element.set("id_interval", jobj.data.interval);
+	//wui.element.set("id_loglvl", jobj.data.loglvl);
+	document.getElementById("id_status").style.backgroundImage='url(../images/'+ jobj.data.status +'.gif)';
+	sel_device=-1;
+	sel_channel=-1;
+	device_show();
+	channel_show();
+}
+
+function print(){
+	var str='<table border="1">';
+	var num=0;
+	str+='<tr><th>Nr.</th><th>Full channel name</th><th>Unit</th><th>Channel description</th></tr>';
+	for (var i in jobj.data.device){
+		if(jobj.data.device[i].name=='') continue;
+		for (var y in jobj.data.device[i].channel){
+			if(jobj.data.device[i].channel[y].name=='') continue;
+			num++;
+			str+='<tr><td>'+num+'</td>';
+			str+='<td>'+jobj.data.device[i].name+'.'+jobj.data.device[i].channel[y].name+'</td>';
+			str+='<td>'+jobj.data.device[i].channel[y].unit+'</td>';
+			str+='<td>'+jobj.data.device[i].channel[y].info+'</td></tr>';
+		}
+	}
+	str+='</table>';
+	fenster = window.open("", "Channel overview", "");
+	fenster.document.write(str);
+	fenster.focus();
+	fenster.print();
+	fenster.close();
+	return false;
+}
+function device_show(){
+	var str='<table class="t2" cellspacing="0" cellpadding="0" width="100%" bgcolor="#000064">';
+	str+='<tr><th width="25">Nr.</th><th width="100">Name</th><th width="80">Driver</th><th width="200">Address</th><th>Description</th>';
+	str+='<th width="25">-</th><th width="25" onclick="device_add(0)" title="Add Device"><img width="25" height="25" src="../images/add.gif"/></th><th width="25">-</th></tr>';
+	for (var i in jobj.data.device){
+		str+='<tr id="id_d'+i+'" title="Select/Deselect Device ('+jobj.data.device[i].name+') to edit">';
+		str+='<td width="25" onclick="device_sel('+i+')">'+i+'</td>';
+		str+='<td width="100" onclick="device_sel('+i+')">'+jobj.data.device[i].name+'</td>';
+		str+='<td width="80" onclick="device_sel('+i+')">'+jobj.data.driver[jobj.data.device[i].driver].name+'</td>';
+		str+='<td width="200" onclick="device_sel('+i+')">'+jobj.data.device[i].addr+'&nbsp;</td>';
+		str+='<td onclick="device_sel('+i+')">'+jobj.data.device[i].info+'&nbsp;</td>';
+		str+='<td width="25" onclick="device_scan('+i+')" title="Scan Device"><img width="25" height="25" src="../images/scan.gif"/></td>';
+		str+='<td width="25" onclick="device_edit('+i+')" title="Edit Device"><img width="25" height="25" src="../images/edit.gif"/></td>';
+		str+='<td width="25" onclick="device_del('+i+')" title="Delete Device"><img width="25" height="25" src="../images/delete.gif"/></td>';
+		str+='</tr>';
+	}
+	str+='</table>';
+	document.getElementById('device_tab').innerHTML=str;
+}
+function device_del(row){
+	jobj.data.device.splice(row, 1);
+	device_show();
+}
+function device_sel(row){
+	if(sel_device == row){
+		try{document.getElementById("id_d"+sel_device).style.backgroundColor = '#DDDDDD';}catch(e){}
+		sel_device = -1;
+		document.getElementById('channel_tab').innerHTML='';
+	}else{
+		try{document.getElementById("id_d"+sel_device).style.backgroundColor = '#DDDDDD';}catch(e){}
+		sel_device = row;
+		sel_channel = -1;
+		try{document.getElementById("id_d"+sel_device).style.backgroundColor = '#00FF00';}catch(e){}
+	}
+	channel_show();
+}
+function device_add(n){
+	wui.draw.boxClose();
+	var c='';
+	for (var i in jobj.data.driver)
+		c+='<input type="button" class="bm1" value="'+jobj.data.driver[i].name+'" onclick="device_edit(-1,'+i+')"><br>';
+	wui.draw.boxOpen(3,"Add Device",c, 200);
+}
+function device_edit(n,d) {
+	wui.draw.boxClose();
+	view = 'device';
+	sel_device = n;
+	if(n>=0) d=jobj.data.device[n].driver;
+	sel_driver = d;
+	var e=jobj.data.driver[sel_driver].name;
+	switch (e) {
+	case "PLANT": show_window(e,140,500); break;
+	case "MODBUS": show_window(e,240,500); break;
+	case "MBUS": show_window(e,220,500); break;
+	default: show_window("PLANT",140,500); break;
+	}
+}
+function device_scan(n) {
+	wui.draw.boxClose();
+	view = 'scan';
+	sel_device = n;
+	sel_driver = jobj.data.device[n].driver;
+	var e=jobj.data.driver[sel_driver].name;
+	switch (e) {
+	case "PLANT": show_window(e,80,500); break;
+	case "MODBUS": show_window(e,80,500); break;
+	case "MBUS": show_window(e,150,500); break;
+	default: show_window("PLANT",80,500); break;
+	}
+}
+
+function channel_show(){
+	var str='<table class="t2" cellspacing="0" cellpadding="0" width="100%" bgcolor="#000064">';
+	if(sel_device>=0) {
+		str+='<tr><th width="25">Nr.</th><th width="100">Name</th><th width="80">Unit</th><th width="200">Source</th><th>Description</th><th>Step</th>';
+		str+='<th width="25" onclick="channel_add(0)" title="Add Channel"><img width="25" height="25" src="../images/add.gif"/></th><th width="20">-</th></tr>';
+		for (var i in jobj.data.device[sel_device].channel){
+			str+='<tr id="id_c'+i+'" title="Select/Deselect Channel ('+jobj.data.device[sel_device].channel[i].name+') to edit">';
+			str+='<td width="25">'+i+'</td>';
+			str+='<td width="100">'+jobj.data.device[sel_device].channel[i].name+'</td>';
+			str+='<td width="80">'+jobj.data.device[sel_device].channel[i].unit+'&nbsp;</td>';
+			str+='<td width="200">'+jobj.data.device[sel_device].channel[i].src+'</td>';
+			str+='<td >'+jobj.data.device[sel_device].channel[i].info+'&nbsp;</td>';
+			str+='<td width="80">'+jobj.data.device[sel_device].channel[i].step+'&nbsp;</td>';
+			str+='<td width="25" onclick="channel_edit('+i+')" title="Edit Channel"><img width="25" height="25" src="../images/edit.gif"/></td>';
+			str+='<td width="25" onclick="channel_del('+i+')" title="Delete Channel"><img width="25" height="25" src="../images/delete.gif"/></td>';
+			str+='</tr>';
+		}
+	}
+	str+='</table>';
+	document.getElementById('channel_tab').innerHTML=str;
+}
+function channel_sel(row){
+	sel_channel = row;
+}
+function channel_del(row){
+	jobj.data.device[sel_device].channel.splice(row, 1);
+	channel_show();
+}
+function channel_edit(n){
+	wui.draw.boxClose();
+	view = 'channel';
+	sel_channel = n;
+	sel_driver = jobj.data.device[sel_device].driver;
+	var e=jobj.data.driver[sel_driver].name;
+	switch (e) {
+	case "PLANT": show_window(e,210,500); break;
+	case "MODBUS": show_window(e,310,500); break;
+	case "MBUS": show_window(e,230,500); break;
+	default: show_window("PLANT",210,500); break;
+	}
+}
+function channel_add(){
+	channel_edit(-1);
+}
+function show_window(d,h,w){
+	wui.draw.boxOpen(3, d+' '+view+' setup', '<iframe name="setup" src="../html/fde_server_'+d+'.htm" frameborder="0" marginwidth="0" marginheight="0" height="'+h+'" width="98%" scrolling="no"></iframe>', w);
+}
+function dump(){
+        window.open('fde_server.cgi?{#sid#}&action=get.dump','FDE Server dump', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=480,height=800');
+}
+//--></SCRIPT>
+</head>
+
+<body onload="init()" leftmargin="10" marginwidth="10" topmargin="10" marginheight="10">
+<h3>Field data engine configuration</h3>
+
+<table class="t1" cellspacing="0">
+<tr><th colspan="3">FDE server service</th></tr>
+<tr>
+<td class="cl">Enable/Disable FDE server :</td>
+<td class="cm"><div style="float:left;padding-top:4px;"><input type="checkbox" class="checkbox" id="id_service"></div><div class="status" id="id_status" title="Running/Stopped"></div></td>
+<td class="cr">This will start/stop FDE server</td>
+</tr>
+<tr>
+<td class="cl">Data read interval [sec] :</td>
+<td class="cm"><input type="text" id="id_interval" maxlength="2" size="5"></td>
+<td class="cr">Data read interval of devices 1-60 sec.</td>
+</tr>
+<!--<tr>
+<td class="cl">Server loglevel</td>
+<td class="cm"><input type="text" id="id_loglvl" maxlength="1" size="5"></td>
+<td class="cr">Loglevel 0-7 of server</td>
+</tr>-->
+
+<tr class="space"><td colspan="3"></td></tr>
+<tr><th colspan="3">Virtual Devices</th></tr>
+<tr>
+<td class="cm" colspan="3"><div id="device_tab"></div></td>
+</tr>
+<tr class="space"><td colspan="3"></td></tr>
+<!-- end Device Box -->
+
+<tr>
+<th colspan="3">Device Data Channels</th>
+</tr>
+<tr>
+<td class="cm" colspan="3"><div id="channel_tab"></div></td>
+</tr>
+<tr>
+<td colspan="3">{#response#}</td>
+</tr>
+<tr>
+<td colspan="3">
+	<table class="t3" style="float:left;width:160px;">
+	<tr>
+	<td width="80"><a href="#" target="_self" onclick="print()">Print</a></td>
+	<td width="80"><a href="#" onclick="dump()">Dump</a></td>
+	</tr>
+	</table>
+	<script language="JavaScript">wui.draw.buttons(1);</script>
+</td>
+</tr>
+</table>
+</body>
+</html>

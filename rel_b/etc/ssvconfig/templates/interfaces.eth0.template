@@ -1,0 +1,13 @@
+# Used by ifup(8) and ifdown(8). See the interfaces(5) manpage or
+# /usr/share/doc/ifupdown/examples for more information.
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# eth0 interface
+{% =WUI_chk_eth0%on% %}auto eth0
+{% =WUI_chk_eth0%on% %}iface eth0 inet {% $WUI_chk_eth0_mode %}
+{% =WUI_chk_eth0%on% %}{% =WUI_chk_eth0_mode%static% %}    address {% $WUI_eth0_ip %}
+{% =WUI_chk_eth0%on% %}{% =WUI_chk_eth0_mode%static% %}    netmask {% $WUI_eth0_nm %}
+{% =WUI_chk_dgw%on% %}    gateway {% $WUI_dgw_ip %}

@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# Clear any existing firewall stuff before we start
+iptables --flush
+iptables --delete-chain
+iptables -t nat --flush
+iptables -t nat --delete-chain
+iptables -t mangle --flush
+iptables -t mangle --delete-chain
+
+# As the default policies, drop all incoming traffic but allow all
+# outgoing traffic.  This will allow us to make outgoing connections
+# from any port, but will only allow incoming connections on the ports
+# specified below.
+
+# Set default policies
+iptables -P OUTPUT ACCEPT
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+
+# Keep state of connections from local machine and private subnets
+iptables -A OUTPUT -o eth0 -m state --state NEW -j ACCEPT
+iptables -A INPUT -i eth0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Allow all incoming traffic per devices
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A INPUT -i eth0 -j ACCEPT
+iptables -A INPUT -i br0 -j ACCEPT
+
+# VPN
+iptables -A INPUT -i tap+ -j ACCEPT
+iptables -A FORWARD -i tap+ -j ACCEPT
+iptables -A FORWARD -o tap+ -j ACCEPT
+iptables -A INPUT -i tun+ -j ACCEPT
+iptables -A FORWARD -i tun+ -j ACCEPT
+iptables -A FORWARD -o tun+ -j ACCEPT

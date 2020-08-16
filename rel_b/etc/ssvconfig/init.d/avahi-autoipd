@@ -1,0 +1,44 @@
+#! /bin/sh
+
+. /etc/ssvconfig/bin/ssvfunction
+. /etc/mgmtd.conf
+. /etc/ssvconfig/config/services.cfg
+
+DAEMON=/usr/local/sbin/avahi-autoipd
+
+test -f $DAEMON || exit 0
+
+start() {
+	echo -n "Starting AutoIP Deamon ...................................."
+	[ "$WUI_chk_autoip" != "on" ] && echo "disabled" && exit 0
+	avahi-autoipd -D -w --no-drop-root --no-chroot --force-bind -t /etc/ssvconfig/init.d/avahi-autoipd.action $NETDEV
+	[ $? -eq 0 ] && echo "done" || echo "faild"
+}
+
+stop() {
+	echo -n "Stopping AutoIP Deamon ...................................."
+	avahi-autoipd -k $NETDEV
+	echo "done"
+}
+
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    restart)
+	stop
+	sleep 1
+	start
+	;;
+    configure)
+	;;
+    *)
+	echo "Usage: $0 {start|stop|restart|configure}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

@@ -1,0 +1,29 @@
+<html>
+<head>
+<title>Log File</title>
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+</head>
+<body leftmargin="10" marginwidth="10" topmargin="10" marginheight="10">
+<table border="0" width="100%" height="95%">
+<tr height="40">
+<td height="40"><h3 align="left">System logfile</h3></td>
+</tr>
+<tr>
+<td align="left" valign="top">
+<table class="t1" cellspacing="0">
+<tr>
+<td class="cm" colspan="3" style="padding:1px 2px 1px 1px;">
+<iframe src="sys_logging.cgi?{#sid#}&action=view&file=/var/log/messages" name="logfile" style="border: 1px solid #000064;" marginwidth="0" marginheight="0" width="100%" height="500"></iframe>
+</td>
+</tr>
+<tr>
+<td class="cl">Download log file :</td>
+<td class="cm"><input type="button" class="br1" onclick="document.location.href=('sys_logging.cgi?{#sid#}&action=download&file=/var/log/messages');" value="Download"></td>
+<td class="cr">Download and save log as file</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

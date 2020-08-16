@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../css/root.css" media="all">
+<link rel="icon" type="image/x-icon" href="../css/images/favicon.ico">
+<link rel="shortcut icon" type="image/x-icon" href="../css/images/favicon.ico">
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/wui.functions.js"></script>
+<script type="text/javascript">
+var pos=0;
+var width=0;
+var height=0;
+var frame=0;
+var channel;
+function set_config(){ 
+    width=$("#graph").width();
+    height=300;
+    //if(height<=0) height=210;
+    frame=$("#select-choice-2").val();
+    channel=$("#select-choice-1").val();
+}
+function draw(p){
+    set_config();
+    var comm="?h="+height+"&w="+width+"&f="+frame+"&p="+pos+"&c="+channel;
+    $("#graphpng").attr("src", "graph.php"+comm);
+}
+function init(){
+    draw();
+}
+</script>
+<title>{$page.name$}</title>
+</head>
+<body onload="init();">
+<div id="page">
+    <div id="header">
+        <h1><a href="http://www.elcore2400.com"><img src="../css/images/logo.png" /></a></h1>
+    </div>
+    <div id="navigation-top">
+        <ul>
+            <li class="first"><a href="webgui.cgi?{#sid#}&html=overview">{$menu.plant$}</li>
+            <li>&nbsp;</li>
+            <li><a href="userconf.cgi?{#sid#}">{$menu.userconf$}</a></li>
+            <li class="last" onmouseout="$('#navigation-top-sub').hide()" onmouseover="$('#navigation-top-sub').show()">
+                <a href="#">{$language$}&nbsp;<img src="../css/images/{#lang#}.png"></a>
+                <div id="navigation-top-sub" class="navigation-top-sub" style="display:none;">
+                <a href="#" onclick="wui.set_lang('{#sid#}','de')"><img src="../css/images/de.png">{$language.de$}</a>
+                <a href="#" onclick="wui.set_lang('{#sid#}','gb')"><img src="../css/images/gb.png">{$language.gb$}</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div id="header-image">
+        <img src="../css/images/header-startpage.jpg" />
+    </div>
+    <div id="page-inner">
+        <div id="navigation-left">
+            <ul>
+                <li class="first"><a href="webgui.cgi?{#sid#}&html=overview">{$menu.overview$}</a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=archive"><u>{$menu.archive$}</u></a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=messages">{$menu.messages$}</a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=parameter">{$menu.config$}</a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=data">{$menu.data$}</a></li>
+            </ul>
+        </div>
+        <div id="content">
+            <h1>{$menu.archive$}</h1>
+	    <h4>{$menu.plant$} {#serial#}</h4>
+            
+	    <select onchange="draw();" name="select-choice-1" id="select-choice-1">
+                <option value="test.v_out">{$overview.voltage$}</option>
+                <option value="test.t_wather">{$overview.heat$}</option>
+                <option value="test.t_power">{$overview.t_power$}</option>
+                <option value="test.e_power">{$overview.e_power$}</option>
+            </select>
+            <div id="graph">
+                <img id="graphpng" src="" />
+            </div>
+
+            <table style="width:100%;padding:0px;margin:0px">
+                <tr>
+                <td width="20%"><input onclick="draw(pos++);" value="{$action.back$}" type="button"></td>
+                <td width="60%"> 
+                    <select style="width:100%" onchange="draw();" id="select-choice-2" name="select-choice-2">
+                        <option value="31536000">1 Jahr</option>
+                        <option value="2592000">1 Monat</option>
+                        <!--<option value="604800">1 Woche</option>-->
+                        <option value="86400" selected="selected">1 Tag</option>
+                        <!--<option value="21600">6 Stunden</option>-->
+                    </select>
+                </td>
+                <td width="20%"><input onclick="draw(pos--);" value="{$action.next$}" type="button"></td>
+                </tr>
+            </table>
+        </div>
+        
+        <div id="ticker">
+        </div>
+        
+        <div class="clear"></div>
+    </div>
+    <div id="footer">
+        <ul>
+            <li class="first"><a href="access.cgi?{#sid#}&action=logout">{$menu.logout$}</a></li>
+            <li><a href="#"></a></li>
+            <li><a href="#"></a></li>
+            <li><a href="#"></a></li>
+            <li class="last"><a href="#"></a></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

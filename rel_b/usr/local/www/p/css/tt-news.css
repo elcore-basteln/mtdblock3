@@ -1,0 +1,205 @@
+/* CSS Document */
+/*-----------------------------------  tt_news LATEST view  -----------------------------------*/
+
+.news-latest-container {
+	padding: 10px 0px 0px 0px;
+}
+
+.news-latest-container H2{
+	 color:#73B331;
+	  font-size: 12px;
+	  font-weight: normal;
+}
+
+.news-latest-item {
+	/* IE hack */
+	height: 1%;
+	line-height: 1.3;
+	/* IE hack end */
+	padding:18px 10px 10px 14px;
+	margin:0px 0px 3px 0px;
+	background-color:#f5f4f1;
+}
+.news-latest-item p{
+	margin-top: 6px;
+	
+
+}
+
+.news-latest-item IMG {
+
+	margin:12px 5px 5px 0px;
+	float:left;
+}
+.news-latest-category IMG {
+	float: none;
+	border:none;
+	margin:0px;
+}
+
+.news-latest-date {
+	font-size:11px;
+	color:#9eb3c9;
+}
+
+.news-latest-morelink,.news-latest-category {
+	font-size:9px;
+	
+}
+
+.news-latest-morelink {
+	font-size:12px;
+}
+
+.news-latest-morelink A {
+	float:right;
+}
+
+
+/*-----------------------------------  tt_news LATEST view  end -----------------------------------*/
+
+
+/*--------------------------------- tt_news LIST view  -----------------------------------*/
+
+
+
+.news-list-container{
+	width: 654px;
+	margin: 20px 0px 0px -4px;
+	padding: 0px;
+}
+.news-list-item{
+	float: left;
+	margin: 8px 4px 0px 4px !important;
+	width: 500px;
+}^
+
+div.hr {
+	margin-top: 0px !important;
+}
+
+.news-list-item h2, .news-list-item h2 a{
+	  color:#73B331;
+	  font-size: 16px;
+	  font-weight: bold;
+}
+
+.news-list-container img{
+	float: none !important;
+	margin: 0px 10px 10px 0px !important;	
+}
+
+.news-list-item-left{
+	float: left;
+}
+
+.news-list-item-right{
+	/*float: right;*/
+	width: 425px;
+	margin-right: 10px;
+}
+
+.news-list-item-right h2 + p{
+	margin-top: 0px;	
+}
+
+.news-list-browse{
+	margin-top: 16px;	
+}
+
+.news-list-date {
+	font-size:11px !important;
+	color:#7DA353;
+	float:left;
+	padding: 0px;
+}
+
+
+.news-list-morelink  a{
+	font-size:12px;
+	background-image:  url(images/a-more.gif);
+	background-position: left center;
+	background-repeat: no-repeat;
+	padding-left:10px;
+	margin-right: 10px;
+	float:right;
+	font-weight: bold;
+	color:#73B331;
+}
+
+
+/*--------------------------------- tt_news LIST view end -----------------------------------*/
+
+
+/*--------------------------------- tt_news SINGLE view  ---------------------------------*/
+.news-single-item {
+	/* IE hack */
+	height: 1%;
+	line-height: 1.3;
+	/* IE hack end */
+	padding:1px 10px 0px 0px;
+	margin:0px 0px 0px 0px;
+
+}
+.news-single-item H2 {
+	color:#666;
+	  font-size: 15px;
+	  font-weight: bold;
+}
+.news-single-item H3 {
+}
+
+.news-single-backlink {
+	margin-top:10px;
+	font-size:12px;
+	background-image:  url(images/a-less.gif);
+	background-position: left center;
+	background-repeat: no-repeat;
+	/*padding-left:10px;*/
+	text-decoration: none;
+	font-weight: bold;
+	color:#73B331;
+}
+
+
+.news-single-img {
+	/*float:left;*/
+    margin: 0px 10px 0 -2px;
+    /*padding-top: 20px;*/
+	width: 210px;
+}
+
+
+
+.news-single-imgcaption {
+}
+
+.news-single-category {
+}
+.news-single-backlink a {
+	font-size:12px;
+	background-image:  url(images/a-less.gif);
+	background-position: 0px 5px;
+	background-repeat: no-repeat;
+	padding-left:10px;
+}
+.news-single-timedata { 
+
+}
+
+.news-single-timedata, .news-single-author,.news-single-imgcaption{
+}
+.news-single-author {
+
+}
+.news-single-additional-info {
+
+}
+.news-single-related,.news-single-files,.news-single-links  {
+}
+
+.news-single-related DD, .news-single-links DD, .news-single-files DD {
+}
+
+.news-single-related DT, .news-single-links DT, .news-single-files DT {
+}

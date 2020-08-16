@@ -1,0 +1,24 @@
+#global environment
+
+#network: set network device(s)
+SSV_G_NETDEV0="eth0"
+SSV_G_NETDEV1="eth1"
+SSV_G_DSLDEV="eth0"
+
+#comport: set modem device "ttyAT?" "ttyS?"
+SSV_G_MODDEV="/dev/ttyAT"
+SSV_G_MODBAUD="57600"
+SSV_G_MODDELAY="5"
+SSV_G_SIMDELAY="10"
+# Set -v for verbose chat
+SSV_G_VERBOSE="-v"
+
+#modem types search list with ATI0
+#ANALOG ID: 288, MT56000, MT5634SMI, Testmodem ELSA MicroLink 33.6TQV
+SSV_G_MODANALOG="288"
+#ISDN ID: AL5068S
+SSV_G_MODISDN="AL5068S"
+#GPRS G24/G24-L Motorola
+SSV_G_MODGPRS="G24"
+#UMTS H24 Motorola
+SSV_G_MODUMTS="H24"

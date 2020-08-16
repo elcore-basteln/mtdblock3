@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>{$page.name$}</title>
+<link rel="icon" type="image/ico" href="../css/images/favicon.ico">
+<link rel="shortcut icon" href="../css/images/favicon.ico">
+<link rel="stylesheet" href="../css/jquery.mobile.min.css" />
+<link rel="stylesheet" href="../css/user.css" />
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/wui.functions.js"></script>
+<script type="text/javascript" src="../js/jquery.mobile.min.js"></script>
+<script type="text/javascript">
+var url="fde_data.cgi?{#sid#}&action=get";
+var jds = new Array();
+jds.d = new Object();
+jds.f = new Object();
+function subscribe(id,v,f) {
+	if (!id || id == "") return;    /* exit if parameter empty */
+	jds.d[id] = v;
+	if(f) jds.f[id] = f;
+}
+function init(){
+	$.get(url, ajax_cb);
+}
+function ajax_cb(r) {
+	var o=eval('('+r+')');
+	var str="";
+	for (var v in o.data) {
+		if (v.search(/ERROR/) != -1) {
+                        var a=o.data[v].split("|");
+                        if (parseInt(a[0]) != 0) {
+			str+='<tr><td><b>'+a[1]+'</b><br>('+a[2]+')</td><td>'+a[3]+(a[4]!=''?'<br><i>&nbsp;'+a[4]+'</i>':'')+'</td><td>'+date(a[0])+'</td></tr>';
+                        }
+                }
+	}
+	if (str == "")
+		str="<tr><th>{$messages.no$}</th></tr>";
+	else
+		str="<tr><th>Nr</th><th>{$messages.desc$}</th><th>{$messages.time$}</th></tr>"+str;
+	$("#errors").html(str);
+}
+
+function pad(v) {
+	return (v.toString().length < 2) ? '0' + v : v;
+}
+function date(t){
+	var t = new Date(t*1000);
+	return pad(t.getUTCDate())+"-"+pad(t.getUTCMonth() + 1)+"-"+t.getUTCFullYear()+" "+pad(t.getUTCHours())+":"+pad(t.getUTCMinutes())+":"+pad(t.getUTCSeconds());
+}
+</script>
+</head>
+<body onload="init();">
+<div data-role="page" data-theme="c">
+    <div data-role="header" data-theme="a" class="wui-header">
+        <img src="../css/images/logo_mobil.png" />
+        <div class="ui-grid-b">
+        <div class="ui-block-a"><a data-role="none" href="webgui.cgi?{#sid#}&html=overview">{$menu.plant$}</a></div>
+        <div class="ui-block-b"><a data-role="none" href="#menu">{$menu.menu$}</a></div>
+        <div class="ui-block-c"><a data-role="none" href="#language">{$language$}&nbsp;<img src="../css/images/{#lang#}.png" class="ui-li-icon"></a></div>
+        </div>
+    </div>
+    <div data-role="content">	
+        <h3 style="margin-bottom:0px;">{$menu.messages$}</h3>
+	<div style="margin:5px 0px 5px 5px;font-size:12px;">{$menu.plant$} {#serial#}</div>
+        <ul data-role="listview" data-inset="true" data-theme="a">
+            <li style="padding:0px;margin:0px">
+	    <table class="errortable" id="errors">
+	    </table>
+	    </li>
+        </ul>
+    </div>
+
+    <div data-role="footer" data-position="fixed" data-theme="b" class="wui-footer">
+        <div class="ui-grid-b">
+        <div class="ui-block-a"><a data-role="none" href="access.cgi?action=logout">{$menu.logout$}</a></div>
+        <div class="ui-block-b"><a data-role="none" href="#"></a></div>
+        <div class="ui-block-c"><a data-role="none" href="#"></a></div>
+        </div>
+    </div>
+</div>
+
+<div data-role="dialog" id="language">
+        <h3 style="margin-left:10px;">{$language$}</h3>
+        <ul data-role="listview" data-inset="true" style="width:90%;margin:auto" data-theme="a">
+                <li><a href="#" onclick="wui.set_lang('{#sid#}','de')"><img src="../css/images/de.png" class="ui-li-icon">{$language.de$}</a></li>
+                <li><a href="#" onclick="wui.set_lang('{#sid#}','gb')"><img src="../css/images/gb.png" class="ui-li-icon">{$language.gb$}</a></li>
+                <li data-theme="b"><a data-rel="back" href="#">{$action.back$}</a></li>
+        </ul>
+</div>
+<div data-role="dialog" id="menu">
+        <h3 style="margin-left:10px;">{$menu.menu$}</h3>
+        <ul data-role="listview" data-inset="true" style="width:90%;margin:auto" data-theme="a">
+                <li><a href="webgui.cgi?{#sid#}&html=overview">{$menu.overview$}</a></li>
+                <!--<li><a href="webgui.cgi?{#sid#}&html=archive">{$menu.archive$}</a></li>-->
+                <li><a href="webgui.cgi?{#sid#}&html=messages">{$menu.messages$}</a></li>
+                <li><a href="webgui.cgi?{#sid#}&html=parameter">{$menu.config$}</a></li>
+                <li><a href="webgui.cgi?{#sid#}&html=data">{$menu.data$}</a></li>
+        </ul>
+        <br>
+        <ul data-role="listview" data-inset="true" style="width:90%;margin:auto" data-theme="a">
+                <li><a href="userconf.cgi?{#sid#}">{$userconf.chpass$}</a></li>
+        </ul>
+        <br>
+        <ul data-role="listview" data-inset="true" style="width:90%;margin:auto" data-theme="a">
+                <li data-theme="b"><a data-rel="back" href="#">{$action.back$}</a></li>
+        </ul>
+</div>
+</body>
+</html>

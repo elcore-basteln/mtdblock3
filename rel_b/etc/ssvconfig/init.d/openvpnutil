@@ -1,0 +1,117 @@
+#!/bin/sh
+
+. /etc/ssvconfig/bin/ssvfunction
+. /etc/ssvconfig/config/openvpn
+
+CONF="/etc/ssvconfig/config/openvpn"
+
+# $1 DNP name
+# $2 new value
+opt_set()
+{
+	if grep -qE "^$1=.*" <$CONF
+	then
+		sed -ie "s|^$1=\"\(.*\)\"|$1=\"$2\"|" $CONF
+	else
+		echo "$1=\"$2\"" >>$CONF
+	fi
+}
+
+# $1 DNP name
+# $2 AWS name
+opt_val()
+{
+	V=`sed -ne "s/^$2='\(.*\)'/\\1/p" <client.cfg`
+	opt_set $1 "$V"
+}
+
+# $1 DNP name
+# $2 AWS name
+# $3 AWS check name
+# $4 AWS check value
+opt_check()
+{
+	V=`sed -ne "s/^$3='\(.*\)'/\\1/p" <client.cfg`
+	if [ "x$V" = "x$4" ]
+	then
+		opt_val $1 $2
+		return 0
+	fi
+	return 1
+}
+
+update()
+{
+	if [ "$1" = "FS" ]; then
+		logger -t openvpnutil "Updating from archive $2"
+		mkdir /tmp/ssvconfig/openvpnutil-$$
+		cd /tmp/ssvconfig/openvpnutil-$$
+		RC=2
+		if tar xzf /etc/openvpn/certs/client/client.dat
+		then
+			RC=0
+			grep -vE "SSV_OPENVPN_CLIENT_STATUS_CK|SSV_OPENVPN_CLIENT_STATUS_CC|SSV_OPENVPN_CLIENT_STATUS_RC" \
+			 </etc/ssvconfig/config/openvpn >conf
+			cp -p ca*.crt /etc/openvpn/certs/client/ca.crt || RC=3 && \
+			echo "SSV_OPENVPN_CLIENT_STATUS_RC=\"`ls ca*.crt`\"" >>conf
+			cp -p client*.crt /etc/openvpn/certs/client/client.crt || RC=3 && \
+			echo "SSV_OPENVPN_CLIENT_STATUS_CK=\"`ls client*.key`\"" >>conf
+			cp -p client*.key /etc/openvpn/certs/client/client.key || RC=3 && \
+			echo "SSV_OPENVPN_CLIENT_STATUS_CC=\"`ls client*.crt`\"" >>conf
+			mv -f conf /etc/ssvconfig/config/openvpn
+			if [ -e client.cfg ]
+			then
+				logger -t openvpnutil "Import client config"
+				opt_set SSV_OPENVPN_ON "on"
+				opt_set SSV_OPENVPN_SC "client"
+				if opt_check SSV_OPENVPN_CLIENT_IP WUI_dyndns_host WUI_chk_ip2dyndns "on"
+				then
+					# DynDNS exist and is enabled, switch S3 Bucket off
+					opt_set SSV_OPENVPN_CLIENT_AWS "off"
+				elif opt_check SSV_OPENVPN_CLIENT_IP WUI_s3_bucket_name WUI_chk_ip2s3 "on"
+				then
+					# S3 Bucket exist and is enabled, switch it on
+					opt_set SSV_OPENVPN_CLIENT_AWS "on"
+				elif opt_check SSV_OPENVPN_CLIENT_IP WUI_hostname WUI_chk_ip2s3 "off"
+				then
+					# Hostname exist and Bucket is off, switch Bucket off
+					opt_set SSV_OPENVPN_CLIENT_AWS "off"
+				else
+					logger -t openvpnutil "No Bucket/DynDNS/Hostname found!"
+				fi
+				opt_val SSV_OPENVPN_DEV WUI_vpn_device
+				opt_val SSV_OPENVPN_CLIENT_PROTO WUI_chk_protocol
+				opt_val SSV_OPENVPN_CLIENT_PORT WUI_port
+				opt_val SSV_OPENVPN_CLIENT_COMPR WUI_chk_compres
+				opt_val SSV_OPENVPN_CLIENT_MODE WUI_sel_netmode
+				opt_val SSV_OPENVPN_FW_ON WUI_vpn_fwrules
+				opt_val SSV_OPENVPN_FW_URL WUI_vpn_fwurl
+			else
+				logger -t openvpnutil "No client config found"
+			fi
+		fi
+		cd /
+		rm -rf /tmp/ssvconfig/openvpnutil-$$ /etc/openvpn/certs/client/client.dat
+		exit $RC
+	fi
+
+	logger -t openvpnutil "Updating ! New filename = $2"
+	if [ "x$(grep -s 'SSV_OPENVPN_CLIENT_STATUS_$1=\"$2\"' /etc/ssvconfig/config/openvpn)" = "x" ] ; then
+		grep -v -s SSV_OPENVPN_CLIENT_STATUS_$1 /etc/ssvconfig/config/openvpn >/tmp/ssvconfig/openvpn
+		echo "SSV_OPENVPN_CLIENT_STATUS_$1=\"$2\"" >>/tmp/ssvconfig/openvpn
+		mv -f /tmp/ssvconfig/openvpn /etc/ssvconfig/config/openvpn
+	fi
+	exit 0
+}
+
+
+case "$1" in
+    update)
+	update $2 $3
+	;;
+    *)
+	echo "Usage: $0 {update}"
+	exit 1
+esac
+
+exit 0

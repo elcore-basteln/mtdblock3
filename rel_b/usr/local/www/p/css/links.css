@@ -1,0 +1,28 @@
+@charset "utf-8";
+/* CSS Document */
+
+/**
+ * Links
+ *
+ * Vordefinierte Links
+ */
+
+/* Standardlinks */
+a{
+	color: #000;
+	text-decoration: none;
+}
+
+#content a{
+	color: #000;
+	text-decoration: underline;
+}
+
+#content a:hover{
+	text-decoration: none;
+}
+
+a:hover, a:active, a.active{
+	color: #000;
+}
+

@@ -1,0 +1,39 @@
+#! /bin/sh 
+#
+# cron          Start and stop script for cron daemon
+#
+# Version:      1.00  01.03.2009  ene@SSV
+#
+
+cron=/usr/sbin/cron
+test -x "$cron" || exit 0
+
+case "$1" in
+  start)
+    echo -n "Starting Vixie-cron........................................"
+    crontab /etc/crontab
+    start-stop-daemon --start -q -x $cron
+    #sleep 2
+    #renice 10 -p $(cat /var/run/cron.pid)
+    echo "done"
+    ;;
+  stop)
+    echo -n "Stopping Vixie-cron........................................"
+    start-stop-daemon --stop -q --pidfile /var/run/cron.pid
+    echo "done"
+    ;;
+  reload|force-reload)
+    crontab /etc/crontab
+    start-stop-daemon --stop -q --signal 1 -x $cron
+    ;;
+  restart)
+    $@ stop    
+    sleep 1
+    $@ start
+    ;;
+  *)
+    echo "Usage: /etc/init.d/cron {start|stop|reload|restart|force-reload}"
+    exit 1
+esac
+
+exit 0

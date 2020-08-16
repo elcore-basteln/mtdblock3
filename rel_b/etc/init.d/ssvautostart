@@ -1,0 +1,9 @@
+#!/bin/sh
+
+[ -x '/flash/autostart.sh' ] || exit 0
+[ -f '/var/run/ssvautostart.pid' ] && exit 0
+grep -q '!ssv_autostart' /proc/cmdline && exit 0
+echo 'Running autostart...'
+/flash/autostart.sh </dev/null >/dev/null 2>/dev/null &
+echo $! > /var/run/ssvautostart.pid
+exit 0

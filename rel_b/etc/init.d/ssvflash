@@ -1,0 +1,6 @@
+#!/bin/sh
+
+grep -Eq '!ssv_flash|root=/dev/mtdblock1' /proc/cmdline && exit 0
+grep -q 'root=/dev/mtdblock2' /proc/cmdline && mount -t jffs2 /dev/mtdblock3 /flash && exit 0
+grep -q 'root=/dev/mtdblock3' /proc/cmdline && mount -t jffs2 /dev/mtdblock2 /flash
+exit 0

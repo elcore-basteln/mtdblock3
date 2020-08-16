@@ -1,0 +1,88 @@
+<html>
+<head>
+<title>General configuration</title>
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+<script language="JavaScript" src="../js/wui.functions.js"></script>
+<script language="JavaScript"><!--
+function send(command){
+	var doc=document.form;
+	doc.action.value=command;
+	if(command=="cancel"){
+        doc.reset();
+        return;
+    } else {
+        doc.submit();
+	}
+}
+--></script>
+</head>
+<body leftmargin="10" marginwidth="10" topmargin="10" marginheight="10">
+<h3>General service configuration</h3>
+
+<form name="form" method="post" action="/cgi-bin/services.cgi?{#sid#}">
+<table width="100%" cellspacing="0" class="t1">
+<tr>
+<th colspan="3">&nbsp;General service configuration</th>
+</tr>
+<tr>
+<td class="cl">&nbsp;Telnet server :</td>
+<td class="cm"><input type="checkbox" class="checkbox" name="chk_telnet" value="on" {#chk_telnet#}></td>
+<td class="cr">&nbsp;Enable or disable telnet server</td>
+</tr>
+<tr>
+<td class="cl">&nbsp;FTP server :</td>
+<td class="cm"><input type="checkbox" class="checkbox" name="chk_ftp" value="on" {#chk_ftp#}></td>
+<td class="cr">&nbsp;Enable or disable ftp server</td>
+</tr>
+<!--
+<tr>
+<td class="cl">&nbsp;TFTP server :</td>
+<td class="cm"><input type="checkbox" class="checkbox" name="chk_tftp" value="on" {#chk_tftp#}></td>
+<td class="cr">&nbsp;Enable or disable tftp server</td>
+</tr>
+<tr>
+<td class="cl">&nbsp;Time server :</td>
+<td class="cm"><input type="checkbox" class="checkbox" name="chk_time" value="on" {#chk_time#}></td>
+<td class="cr">&nbsp;Enable or disable time server</td>
+</tr>
+<tr>
+<td class="cl">&nbsp;Syslog server :</td>
+<td class="cm"><input type="checkbox" class="checkbox" name="chk_syslog" value="on" {#chk_syslog#}></td>
+<td class="cr">&nbsp;Enable or disable syslog server</td>
+</tr>
+<tr style="display:none;">
+<td class="cl">&nbsp;Remote serial console :</td>
+<td class="cm"><input type="checkbox" class="checkbox" name="chk_console" value="on" {#chk_console#}></td>
+<td class="cr" >&nbsp;Serial console on COM1, mode 115200, 8n1</td>
+</tr>
+<tr style="display:none;">
+<td class="cl">&nbsp;SSH service:</td>
+<td class="cm"><input type="checkbox" class="checkbox" name="chk_ssh" value="on" {#chk_ssh#}></td>
+<td class="cr" >&nbsp;Enable or disable SSH access</td>
+</tr>
+-->
+<tr>
+<td class="cl">&nbsp;HTTP/HTTPS Web server :</td>
+<td class="cm"><input type="checkbox" class="checkbox" name="chk_http" value="on" {#chk_http#}></td>
+<td class="cr" >&nbsp;Enable or disable http/https web server</td>
+</tr>
+<tr>
+<td class="cl">&nbsp;AutoIP/ZeroConf :</td>
+<td class="cm"><input type="checkbox" class="checkbox" name="chk_autoip" value="on" {#chk_autoip#}></td>
+<td class="cr" >&nbsp;Enable or disable external SSV ConfigTool</td>
+</tr>
+<tr>
+<td class="cl">&nbsp;UPnP service :</td>
+<td class="cm"><input type="checkbox" class="checkbox" name="chk_upnp" value="on" {#chk_upnp#}></td>
+<td class="cr" >&nbsp;Enable or disable UPnP device support</td>
+</tr>
+<tr>
+<td colspan="3">{#response#}<input type="hidden" name="action" value="cancel"></td>
+</tr>
+<tr>
+<td colspan="3"><script language="JavaScript">wui.draw.buttons(1);</script></td>
+</tr>
+</table>
+</form>
+</body>
+</html>

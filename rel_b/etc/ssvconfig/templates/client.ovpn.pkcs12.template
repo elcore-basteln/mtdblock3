@@ -1,0 +1,16 @@
+client
+proto {% $SSV_OPENVPN_CLIENT_PROTO %}
+dev {% $SSV_OPENVPN_DEV %}0
+remote {% $SSV_OPENVPN_CLIENT_IP %} {% $SSV_OPENVPN_CLIENT_PORT %}
+;resolv-retry infinite
+nobind
+reneg-sec 0
+persist-key
+persist-tun
+ns-cert-type server
+{% ?SSV_OPENVPN_CLIENT_COMPR%on%%;%;% %}comp-lzo
+writepid /var/run/openvpn.pid
+verb 3
+mute 20
+cd /etc/openvpn/certs/client
+pkcs12 client.p12

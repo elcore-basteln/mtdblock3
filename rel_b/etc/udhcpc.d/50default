@@ -1,0 +1,59 @@
+#!/bin/sh
+#
+# udhcpc script edited by Tim Riker <Tim@Rikers.org>
+
+[ -z "$1" ] && echo "Error: should be called from udhcpc" && exit 1
+
+# test for a newer script from firmware
+#[ -x /var/volatile/etc/udhcpc.d/udhcpc.default ] && exec /var/volatile/etc/udhcpc.d/udhcpc.default
+
+RESOLV_CONF="/etc/resolv.conf"
+
+S_DECONFIG="/var/cache/network-dhcp-deconfig"
+S_BOUND="/var/cache/network-dhcp-bound"
+S_LEASEFAIL="/var/cache/network-dhcp-leasefail"
+HELPER_DECONFIG="/etc/ssvconfig/bin/udhcpc.helper.deconfig"
+HELPER_BOUND="/etc/ssvconfig/bin/udhcpc.helper.bound"
+HELPER_LEASEFAIL="/etc/ssvconfig/bin/udhcpc.helper.leasefail"
+
+[ -n "$broadcast" ] && BROADCAST="broadcast $broadcast"
+[ -n "$subnet" ] && NETMASK="netmask $subnet"
+
+case "$1" in
+    deconfig)
+	/sbin/ifconfig $interface 0.0.0.0
+	: > /etc/resolv.conf
+	[ -x ${HELPER_DECONFIG} ] && ${HELPER_DECONFIG}
+	touch ${S_DECONFIG}
+	rm -f ${S_BOUND} ${S_LEASEFAIL}
+	;;
+    renew|bound)
+	/sbin/ifconfig $interface $ip $BROADCAST $NETMASK
+	if [ -n "$router" ] ; then
+	    while route del default gw 0.0.0.0 dev $interface 2>/dev/null ; do
+		:
+	    done
+	    metric=0
+	    for i in $router ; do
+		route add default gw $i dev $interface metric $((metric++))
+	    done
+	fi
+	echo -n > $RESOLV_CONF
+	[ -n "$domain" ] && echo search $domain >> $RESOLV_CONF
+	for i in $dns ; do
+	    echo adding dns $i
+	    echo nameserver $i >> $RESOLV_CONF
+	done
+	[ -x ${HELPER_BOUND} ] && ${HELPER_BOUND}
+	touch ${S_BOUND}
+	rm -f ${S_DECONFIG} ${S_LEASEFAIL}
+	;;
+    leasefail)
+	: > /etc/resolv.conf
+	[ -x ${HELPER_LEASEFAIL} ] && ${HELPER_LEASEFAIL}
+	touch ${S_LEASEFAIL}
+	rm -f ${S_DECONFIG} ${S_BOUND}
+	;;
+esac
+
+exit 0

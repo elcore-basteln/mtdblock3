@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>{$page.name$}</title>
+<link rel="icon" type="image/ico" href="../css/images/favicon.ico">
+<link rel="shortcut icon" href="../css/images/favicon.ico">
+<link rel="stylesheet" href="../css/jquery.mobile.min.css" />
+<link rel="stylesheet" href="../css/user.css" />
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/wui.functions.js"></script>
+<script type="text/javascript" src="../js/jquery.mobile.min.js"></script>
+<script type="text/javascript">
+var url="fde_data.cgi?{#sid#}&action=get&client={#clientid#}";
+var jds = new Array();
+jds.d = new Object();
+jds.f = new Object();
+function subscribe(id,v,f) {
+	if (!id || id == "") return;    /* exit if parameter empty */
+	jds.d[id] = v;
+	if(f) jds.f[id] = f;
+}
+function init(){
+    $.get(url, ajax_cb);
+}
+function ajax_cb(r) {
+	var o=eval('('+r+')');
+	for (var v in jds.d) {
+		switch(typeof jds.f[v]) {
+		case "function": jds.f[v](o.data[jds.d[v]]); break;
+		case "number": document.getElementById(v).innerHTML = parseFloat(o.data[jds.d[v]]).toFixed(jds.f[v]-1); break;
+		default: document.getElementById(v).innerHTML = o.data[jds.d[v]]; break;
+		}
+	}
+}
+</script>
+</head>
+<body onload="init();">
+<div data-role="page" data-theme="c">
+    <div data-role="header" data-theme="a" class="wui-header">
+        <img src="../css/images/logo_mobil.png" />
+        <div class="ui-grid-b">
+        <div class="ui-block-a"><a data-role="none" href="webgui.cgi?{#sid#}&html=overview">{$menu.plant$}</a></div>
+        <div class="ui-block-b"><a data-role="none" href="#menu">{$menu.menu$}</a></div>
+        <div class="ui-block-c"><a data-role="none" href="#language">{$language$}&nbsp;<img src="../css/images/{#lang#}.png" class="ui-li-icon"></a></div>
+        </div>
+    </div>
+    <div data-role="content">	
+        <h3 style="margin-bottom:0px;">{$menu.data$}</h3>
+	<div style="margin:5px 0px 5px 5px;font-size:12px;">{$menu.plant$} {#serial#}</div>
+        <ul data-role="listview" data-inset="true" data-theme="a">
+            <li>
+	    <h4>{$data.info$}</h4>
+            <table class="contenttable"><tbody>
+	    <tr><td colspan="2">{$elc.SerienNr$}</td></tr>
+	    <tr><td colspan="2" id="V1">---</td></tr>
+	    <tr><td colspan="2">{$elc.V_Hauptplatine$}</td></tr>
+	    <tr><td colspan="2" id="V2">---</td></tr>
+	    <tr><td colspan="2">{$elc.V_EWR$}</td></tr>
+	    <tr><td colspan="2" id="V3">---</td></tr>
+	    <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+            {$data.t1$}
+            {$data.t2$}
+            {$data.t3$}
+            {$data.t4$}
+            {$data.t5$}
+            {$data.t6$}
+            {$data.t7$}
+            {$data.t8$}
+            {$data.t9$}
+	    </tbody></table>
+	    <script type="text/javascript"> 
+		subscribe('V1','elc.SerienNr');
+		subscribe('V2','elc.V_Hauptplatine');
+		subscribe('V3','elc.V_EWR');
+	    </script>
+	    </li>
+        </ul>
+	
+	<ul data-role="listview" data-inset="true" data-theme="a">
+		<li>
+		<h4>{$data.contact$}</h4>
+		<span id="V4"></span>
+                <script type="text/javascript">
+                    subscribe('V4','elc.Kontakt',function(v){$('#V4').html(v.replace(/  /g, '<br>'));});
+                </script>
+		</li>
+	</ul>
+	
+    </div>
+
+    <div data-role="footer" data-position="fixed" data-theme="b" class="wui-footer">
+        <div class="ui-grid-b">
+        <div class="ui-block-a"><a data-role="none" href="access.cgi?action=logout">{$menu.logout$}</a></div>
+        <div class="ui-block-b"><a data-role="none" href="#"></a></div>
+        <div class="ui-block-c"><a data-role="none" href="#"></a></div>
+        </div>
+    </div>
+</div>
+
+<div data-role="dialog" id="language">
+        <h3 style="margin-left:10px;">{$language$}</h3>
+        <ul data-role="listview" data-inset="true" style="width:90%;margin:auto" data-theme="a">
+                <li><a href="#" onclick="wui.set_lang('{#sid#}','de')"><img src="../css/images/de.png" class="ui-li-icon">{$language.de$}</a></li>
+                <li><a href="#" onclick="wui.set_lang('{#sid#}','gb')"><img src="../css/images/gb.png" class="ui-li-icon">{$language.gb$}</a></li>
+                <li data-theme="b"><a data-rel="back" href="#">{$action.back$}</a></li>
+        </ul>
+</div>
+<div data-role="dialog" id="menu">
+        <h3 style="margin-left:10px;">{$menu.menu$}</h3>
+        <ul data-role="listview" data-inset="true" style="width:90%;margin:auto" data-theme="a">
+                <li><a href="webgui.cgi?{#sid#}&html=overview">{$menu.overview$}</a></li>
+                <!--<li><a href="webgui.cgi?{#sid#}&html=archive">{$menu.archive$}</a></li>-->
+                <li><a href="webgui.cgi?{#sid#}&html=messages">{$menu.messages$}</a></li>
+                <li><a href="webgui.cgi?{#sid#}&html=parameter">{$menu.config$}</a></li>
+                <li><a href="webgui.cgi?{#sid#}&html=data">{$menu.data$}</a></li>
+        </ul>
+        <br>
+        <ul data-role="listview" data-inset="true" style="width:90%;margin:auto" data-theme="a">
+                <li><a href="userconf.cgi?{#sid#}">{$userconf.chpass$}</a></li>
+        </ul>
+        <br>
+        <ul data-role="listview" data-inset="true" style="width:90%;margin:auto" data-theme="a">
+                <li data-theme="b"><a data-rel="back" href="#">{$action.back$}</a></li>
+        </ul>
+</div>
+
+</body>
+</html>

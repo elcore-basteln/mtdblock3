@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# remount       Remounts the rootfs read or write
+#
+# Version:      1.00  26.02.2010  ene@SSV
+#
+
+case "$1" in
+    rw) mount -n -o remount,rw /
+    ;;
+    ro) mount -n -o remount,ro /
+    ;;
+    *)
+    echo "Usage: $0 {rw|ro}"
+    ;;
+esac
+exit 0

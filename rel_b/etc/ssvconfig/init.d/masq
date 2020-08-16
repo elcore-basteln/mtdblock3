@@ -1,0 +1,29 @@
+#!/bin/sh
+
+. /etc/ssvconfig/bin/ssvfunction
+
+start()
+{
+	iptables -A POSTROUTING -j MASQUERADE -t nat
+	echo "1" > /proc/sys/net/ipv4/ip_forward
+}
+
+stop()
+{
+	iptables -D POSTROUTING -j MASQUERADE -t nat
+	echo "0" > /proc/sys/net/ipv4/ip_forward
+}
+
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    *)
+	echo "Usage: $0 {start|stop}"
+	exit 1
+esac
+
+exit 0

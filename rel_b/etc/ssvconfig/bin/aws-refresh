@@ -1,0 +1,39 @@
+#!/bin/sh
+
+. /etc/ssvconfig/config/openvpn
+
+if [ "x$SSV_OPENVPN_CLIENT_AWS" != "xon" -o "$SSV_OPENVPN_SC" != "client" -o "x$SSV_OPENVPN_ON" != "xon" ]
+then
+	exit 0
+fi
+
+STA=`cat /var/state/vpn-watch.sta 2>/dev/null`
+if [ "x$STA" = "xup" ]
+then
+	exit 0
+fi
+
+TMP=/tmp/aws-refresh.tmp
+ERR=/tmp/aws-refresh.err
+if http-get "http://$SSV_OPENVPN_CLIENT_IP.s3.amazonaws.com/server-ip" >$TMP 2>$ERR
+then
+	IP=`cut -f1 -d' ' <$TMP`
+	if [ -n "$IP" ]
+	then
+		if ! grep -q "^$IP $SSV_OPENVPN_CLIENT_IP\$" /etc/hosts
+		then
+			logger -t aws-refresh "update IP: $IP"
+			echo "127.0.0.1 localhost" >/etc/hosts
+			echo "$IP $SSV_OPENVPN_CLIENT_IP" >>/etc/hosts
+
+			# Restart openVPN with new IP
+			test -z "$1" && \
+			/etc/ssvconfig/init.d/openvpn notify
+		fi
+	else
+		logger -t aws-refresh-error "IP empty"
+	fi
+else
+	logger -t aws-refresh-error <$ERR
+fi
+rm -f $TMP $ERR

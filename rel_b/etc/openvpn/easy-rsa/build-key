@@ -1,0 +1,20 @@
+#!/bin/sh
+
+#
+# Make a certificate/private key pair using a locally generated
+# root certificate.
+#
+ppp=$(pwd)
+
+if test $# -ne 1; then
+        echo "usage: build-key <name>";
+        exit 1
+fi                                                                             
+
+if test $KEY_DIR; then
+	cd $KEY_DIR && \
+	$ppp/build-key-my-client $1
+	chmod 0600 $1.key
+else
+	echo you must define KEY_DIR
+fi

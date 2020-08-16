@@ -1,0 +1,7 @@
+#!/bin/sh
+logger -t wrapper "starting socat $@"
+while true
+do
+	socat -ly $@
+	sleep 5
+done

@@ -1,0 +1,37 @@
+#!/bin/sh
+#
+# lighttpd      Start and stop the web server daemon
+#
+# Version:      1.00  01.03.2009  ene@SSV
+#
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin
+DAEMON=/usr/sbin/lighttpd
+
+ARGS="-f /etc/lighttpd.conf"
+
+case "$1" in
+  start)
+	echo -n "Starting Lighttpd Web Server..............................."
+	start-stop-daemon --start -q -x "$DAEMON" -- ${ARGS}
+	[ $? -eq 0 ] && echo "done" || echo "faild"
+	;;
+  stop)
+	echo -n "Stopping Lighttpd Web Server..............................."
+	start-stop-daemon --stop -q -x "$DAEMON"
+	echo "done"
+	;;
+  restart)
+	echo -n "Restarting Lighttpd Web Server............................."
+	start-stop-daemon --stop -x "$DAEMON"
+	sleep 1
+	start-stop-daemon --start -q -x "$DAEMON" -- ${ARGS}
+	echo "done"
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

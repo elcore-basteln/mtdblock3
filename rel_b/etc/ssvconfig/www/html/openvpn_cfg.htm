@@ -1,0 +1,429 @@
+<html>
+<head>
+<title>OpenVPN</title>
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+<script language="JavaScript" src="../js/functions.js"></script>
+</head>
+<body leftmargin="10" marginwidth="10" topmargin="10" marginheight="10">
+<h3>OpenVPN configuration</h3>
+
+<form name="form" method="post" action="/cgi-bin/openvpn_cfg.cgi">
+<table class="t1" cellspacing="0">
+<tr>
+<th colspan="3">OpenVPN configuration</th>
+</tr>
+<tr>
+<td class="cl">Enable/Disable OpenVPN :</td>
+<td class="cm"><input type="checkbox" class="checkbox" name="CHK$openvpn" onclick="hide()" value="openvpnon"><input type="hidden" name="TXT$submit"></td>
+<td class="cr">Enable or disable OpenVPN</td>
+</tr>
+<tr>
+<td class="cl">Status :</td>
+<td class="cm">PLZ$serversta</td>
+<td class="cr">Server or client status</td>
+</tr>
+
+<tr class="main">
+<td class="cl">Work as :</td>
+<td class="cm">
+<input type="radio" class="radio" name="RAD$auswahl" onclick="hide()" value="server"> server &nbsp; &nbsp;
+<input type="radio" class="radio" name="RAD$auswahl" onclick="hide()" value="client"> client
+</td>
+<td class="cr">Configure this maschine as server or client</td>
+</tr>
+<tr class="main">
+<td class="cl"><p>Device :</p></td>
+<td class="cm"><p>
+<input type="radio" class="radio" name="RAD$dev" value="tun"> TUN &nbsp; &nbsp;
+<input type="radio" class="radio" name="RAD$dev" value="tap"> TAP
+</p></td>
+<td class="cr"><p>TUN for routing, TAP for bridging</p></td>
+</tr>
+<tr class="main">
+<td colspan="3"></td>
+</tr>
+<tr class="client">
+<th colspan="3">OpenVPN client configuration</th>
+</tr>
+<tr class="client">
+<td class="cl">Server address :</td>
+<td class="cm">
+<input type="text" class="text" name="TXT$address" maxlength="40" size="40">
+<input type="checkbox" class="checkbox" name="CHK$aws3" onclick="hide()" value="aws3on"> AWS
+</td>
+<td class="cr"><span id="adrhelp">IP address, DNS name or bucket</span></td>
+</tr>
+<tr class="client">
+<td class="cl">Protocol :</td>
+<td class="cm">
+<input type="radio" class="radio" name="RAD$clientproto" value="clientudp"> UDP &nbsp; &nbsp;
+<input type="radio" class="radio" name="RAD$clientproto" value="clienttcp"> TCP
+</td>
+<td class="cr">UDP protocol is preferred</td>
+</tr>
+<tr class="client">
+<td class="cl">Server port :</td>
+<td class="cm"><input type="text" class="text" name="TXT$port" maxlength="10" size="10"></td>
+<td class="cr">UDP or TCP Port</td>
+</tr>
+<tr class="client">
+<td class="cl">VPN compression :</td>
+<td class="cm"><select class="cmb" name="CMB$compr" size="1"><option value="comproff">Disable<option value="compron">Enable</select></td>
+<td class="cr">Choose compression</td>
+</tr>
+<tr class="client-certs">
+<td class="cl">Client mode :</td>
+<td class="cm"><select class="cmb" onclick="hide()" name="CMB$cclientmode" size="1"><option value="cclientmoderw">Roadwarrior<option value="cclientmodebridge">Bridging</select></td>
+<td class="cr">Choose mode</td>
+</tr>
+<tr class="client-certs" id="cbrip">
+<td class="cl">OpenVPN bridge IP :</td>
+<td class="cm"><input type="text" class="text" name="TXT$ovpnclbr1" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpnclbr2" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpnclbr3" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpnclbr4" maxlength="3" size="3"></td>
+<td class="cr">Establish connection to website</td>
+</tr>
+<tr class="client" id="fwenab">
+<td class="cl"><p>Firewall rules from server :</p></td>
+<td class="cm"><p><input type="checkbox" class="checkbox" name="CHK$fwenab" onclick="hide()" value="fwenabon"></p></td>
+<td class="cr"><p>Read firewall rules after connect</p></td>
+</tr>
+<tr class="client" id="fwurl">
+<td class="cl"><p>Firewall server URL :</p></td>
+<td class="cm"><p><input type="text" class="text" name="TXT$fwurl" maxlength="80" size="40"></p></td>
+<td class="cr"><p>Optional Server URL with rules</p></td>
+</tr>
+
+<!-- ACHTUNG ! Ab hier wird die Serverseite aufgebaut !!!! -->
+<tr class="server">
+<th colspan="3">OpenVPN server configuration</th>
+</tr>
+<tr class="server">
+<td class="cl">Protocol :</td>
+<td class="cm">
+<input type="radio" class="radio" name="RAD$serverproto" value="serverudp"> UDP &nbsp; &nbsp;
+<input type="radio" class="radio" name="RAD$serverproto" value="servertcp"> TCP
+</td>
+<td class="cr">UDP protocol is preferred</td>
+</tr>
+<tr class="server">
+<td class="cl">Port :</td>
+<td class="cm"><input type="text" class="text" name="TXT$serverport" maxlength="10" size="10"></td>
+<td class="cr">Port to listen on</td>
+</tr>
+<tr class="server">
+<td class="cl">VPN compression :</td>
+<td class="cm"><select class="cmb" name="CMB$scompr" size="1"><option value="scomproff">Disable<option value="scompron">Enable</select></td>
+<td class="cr">Choose compression</td>
+</tr>
+<tr class="server-certs">
+<td class="cl">Client mode :</td>
+<td class="cm"><select class="cmb" onclick="hide()" name="CMB$clientmode" size="1"><option value="clientmoderw">Roadwarrior<option value="clientmodebridge">Bridging</select></td>
+<td class="cr">Choose mode</td>
+</tr>
+<tr class="server-certs" id="sbrip">
+<td class="cl">OpenVPN bridge IP :</td>
+<td class="cm"><input type="text" class="text" name="TXT$ovpnethip1" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpnethip2" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpnethip3" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpnethip4" maxlength="3" size="3"></td>
+<td class="cr">Establish connection to website</td>
+</tr>
+<tr class="server-certs" id="startip">
+<td class="cl">Start IP address range :</td>
+<td class="cm"><input type="text" class="text" name="TXT$ovpneth1ip1" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpneth1ip2" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpneth1ip3" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpneth1ip4" maxlength="3" size="3"></td>
+<td class="cr">IP address pool</td>
+</tr>
+<tr class="server-certs" id="endip">
+<td class="cl">End IP address range :</td>
+<td class="cm"><input type="text" class="text" name="TXT$ovpneth2ip1" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpneth2ip2" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpneth2ip3" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpneth2ip4" maxlength="3" size="3"></td>
+<td class="cr">IP address pool</td>
+</tr>
+<tr class="server-shared" id="sip1">
+<td class="cl">This side IP :</td>
+<td class="cm"><input type="text" class="text" name="TXT$shared1ip1" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$shared1ip2" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$shared1ip3" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$shared1ip4" maxlength="3" size="3"></td>
+<td class="cr">IP address for this side of tunnel</td>
+</tr>
+<!--
+<tr class="server-shared" id="sip2">
+<td class="cl">Other side IP :</td>
+<td class="cm"><input type="text" class="text" name="TXT$shared2ip1" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$shared2ip2" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$shared2ip3" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$shared2ip4" maxlength="3" size="3"></td>
+<td class="cr">IP address for other side of tunnel</td>
+</tr>
+-->
+<tr class="server-certs" id="cnet">
+<td class="cl">Network :</td>
+<td class="cm"><input type="text" class="text" name="TXT$ovpnethnet1" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpnethnet2" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpnethnet3" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpnethnet4" maxlength="3" size="3"></td>
+<td class="cr">Network for Clients</td>
+</tr>
+<tr class="server" id="subn">
+<td class="cl">Subnet mask :</td>
+<td class="cm"><input type="text" class="text" name="TXT$ovpnethsub1" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpnethsub2" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpnethsub3" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$ovpnethsub4" maxlength="3" size="3"></td>
+<td class="cr">Subnet mask for clients</td>
+</tr>
+<tr class="server-certs" id="gwon">
+<td class="cl">Use a gateway address :</td>
+<td class="cm"><input type="checkbox" class="checkbox" name="CHK$dgw" onclick="hide()" value="dgw-yes"></td>
+<td class="cr">Set default gateway</td>
+</tr>
+<tr class="server-certs" id="gwip">
+<td class="cl">Default gateway :</td>
+<td class="cm"><input type="text" class="text" name="TXT$dgate1" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$dgate2" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$dgate3" maxlength="3" size="3"> . <input type="text" class="text" name="TXT$dgate4" maxlength="3" size="3"></td>
+<td class="cr">Enter default gateway address</td>
+</tr>
+
+<tr class="main">
+<td colspan="3"></td>
+</tr>
+<tr class="main">
+<th colspan="3">OpenVPN certificates and keys</th>
+</tr>
+
+<tr class="main">
+<td class="cl">Authentification :</td>
+<td class="cm"><select class="cmb" onclick="hide()" name="CMB$authby" size="1">
+<option value="authby-shared">Pre-Shared Keys
+<option value="authby-certs">Certificate
+<option value="authby-pkcs12" id="autbypkcs12">pkcs #12 Certificate
+</select></td>
+<td class="cr">Choose authentification mode</td>
+</tr>
+
+<tr class="client-shared">
+<td class="cl">Status shared key :</td>
+<td class="cm">PLZ$csharedkey<input type="button" class="br1" value="Info" onclick="show('sharedinfoclient')"></td>
+<td class="cr">Currently shared key</td>
+</tr>
+<tr class="client-certs">
+<td class="cl">Status root CA certificate :</td>
+<td class="cm">PLZ$rootcacert<input type="button" class="br1" value="Info" onclick="show('cclientinfo2')"></td>
+<td class="cr">Currently root CA certificate</td>
+</tr>
+<tr class="client-certs">
+<td class="cl">Status client key :</td>
+<td class="cm">PLZ$clientkey<input type="button" class="br1" value="Info" onclick="show('cclientinfo0')"></td>
+<td class="cr">Currently used client key</td>
+</tr>
+<tr class="client-certs">
+<td class="cl">Status client certificate :</td>
+<td class="cm">PLZ$clientcert<input type="button" class="br1" value="Info" onclick="show('cclientinfo1')"></td>
+<td class="cr">Currently used client certificate</td>
+</tr>
+
+<tr class="server-certs">
+<td class="cl">Root CA certificate modification :</td>
+<td class="cm">PLZ$rootcaservercert<input type="button" class="br1" value="Info" onclick="show('serverinfo2')"></td>
+<td class="cr">Currently used root CA certificate</td>
+</tr>
+<tr class="server-certs">
+<td class="cl">Server key modification :</td>
+<td class="cm">PLZ$serverkey<input type="button" class="br1" value="Info" onclick="show('serverinfo0')"></td>
+<td class="cr">Currently used server key</td>
+</tr>
+<tr class="server-certs">
+<td class="cl">Server certificate modification :</td>
+<td class="cm">PLZ$servercert<input type="button" class="br1" value="Info" onclick="show('serverinfo1')"></td>
+<td class="cr">Currently used server certificate</td>
+</tr>
+<tr class="server-certs">
+<td class="cl">Diffie hellman parameters modification :</td>
+<td class="cm">PLZ$dhpara<input type="button" class="br1" value="Info" onclick="show('serverinfo3')"></td>
+<td class="cr">Currently used diffie hellman parameters</td>
+</tr>
+
+<tr class="server-certs">
+<td colspan="3"></td>
+</tr>	
+<tr class="server-certs">
+<th colspan="3">OpenVPN create certificates</th>
+</tr>
+
+<tr class="server-certs">
+<td class="cl">Create root CA key and certificate :</td>
+<td class="cm">
+<input type="button" class="br1" value="Create" name="serverkeysb" onclick="createnow('serverkeys')">
+</td>
+<td class="cr"><span id="create_info">Click to create server cert.</span></td>
+</tr>
+
+<tr class="server-certs">
+<td class="cl">Create client key and certificate :</td>
+<td class="cm">
+<select class="cmb" name="CMB$exportckey" size="1">
+<option value="ckey1">Key and Cert 1</option>
+<option value="ckey2">Key and Cert 2</option>
+<option value="ckey3">Key and Cert 3</option>
+<option value="ckey4">Key and Cert 4</option>
+<option value="ckey5">Key and Cert 5</option>
+<option value="ckey6">Key and Cert 6</option>
+<option value="ckey7">Key and Cert 7</option>
+<option value="ckey8">Key and Cert 8</option>
+<option value="ckeyall">All</option></select>
+<input type="button" class="br1" value="Create" onclick="createnow(CMB$exportckey.value)">
+</td>
+<td class="cr">Click to create desired client key and cert.</td>
+</tr>
+
+<tr class="server-certs">
+<td colspan="3"></td>
+</tr>	
+<tr class="server-certs">
+<th colspan="3">OpenVPN export certificates</th>
+</tr>
+
+<tr class="server-certs" id="rootca">
+<td class="cl">Export root CA certificate :</td>
+<td class="cm">
+    <input type="button" class="br1" value="Info" onclick="show('clientinfo0')">
+    <a class="br1" href="./download.cgi?/etc/openvpn/certs/server/ca.crt" type="application/octet-stream">Root CA</a>
+    <input type="hidden" name="TXT$rcaexist">
+</td>
+<td class="cr">Click to download</td>
+</tr>
+
+<tr class="server-certs" id="client1">
+<td class="cl">Export client 1 key and certificate:</td>
+<td class="cm">
+<input type="checkbox" class="checkbox" name="CHK$client1allow" value="cl1allow">Valid
+<input type="button" class="br1" value="Info" onclick="show('clientinfo1')">
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client1.crt" type="application/octet-stream">Cert 1</a>
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client1.key" type="application/octet-stream">Key 1</a>
+<input type="hidden" name="TXT$client1exist">
+</td>
+<td class="cr">Click to download</td>
+</tr>
+
+<tr class="server-certs" id="client2">
+<td class="cl">Export client 2 key and certificate:</td>
+<td class="cm">
+<input type="checkbox" class="checkbox" name="CHK$client2allow" value="cl2allow">Valid
+<input type="button" class="br1" value="Info" onclick="show('clientinfo2')">
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client2.crt" type="application/octet-stream">Cert 2</a>
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client2.key" type="application/octet-stream">Key 2</a>
+<input type="hidden" name="TXT$client2exist">
+</td>
+<td class="cr">Click to download</td>
+</tr>
+
+<tr class="server-certs" id="client3">
+<td class="cl">Export client 3 key and certificate:</td>
+<td class="cm">
+<input type="checkbox" class="checkbox" name="CHK$client3allow" value="cl3allow">Valid
+<input type="button" class="br1" value="Info" onclick="show('clientinfo3')">
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client3.crt" type="application/octet-stream">Cert 3</a>
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client3.key" type="application/octet-stream">Key 3</a>
+<input type="hidden" name="TXT$client3exist">
+</td>
+<td class="cr">Click to download</td>
+</tr>
+
+<tr class="server-certs" id="client4">
+<td class="cl">Export client 4 key and certificate:</td>
+<td class="cm">
+<input type="checkbox" class="checkbox" name="CHK$client4allow" value="cl4allow">Valid
+<input type="button" class="br1" value="Info" onclick="show('clientinfo4')">
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client4.crt" type="application/octet-stream">Cert 4</a>
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client4.key" type="application/octet-stream">Key 4</a>
+<input type="hidden" name="TXT$client4exist">
+</td>
+<td class="cr">Click to download</td>
+</tr>
+
+<tr class="server-certs" id="client5">
+<td class="cl">Export client 5 key and certificate:</td>
+<td class="cm">
+<input type="checkbox" class="checkbox" name="CHK$client5allow" value="cl5allow">Valid
+<input type="button" class="br1" value="Info" onclick="show('clientinfo5')">
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client5.crt" type="application/octet-stream">Cert 5</a>
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client5.key" type="application/octet-stream">Key 5</a>
+<input type="hidden" name="TXT$client5exist">
+</td>
+<td class="cr">Click to download</td>
+</tr>
+
+<tr class="server-certs" id="client6">
+<td class="cl">Export client 6 key and certificate:</td>
+<td class="cm">
+<input type="checkbox" class="checkbox" name="CHK$client6allow" value="cl6allow">Valid
+<input type="button" class="br1" value="Info" onclick="show('clientinfo6')">
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client6.crt" type="application/octet-stream">Cert 6</a>
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client6.key" type="application/octet-stream">Key 6</a>
+<input type="hidden" name="TXT$client6exist">
+</td>
+<td class="cr">Click to download</td>
+</tr>
+
+<tr class="server-certs" id="client7">
+<td class="cl">Export client 7 key and certificate:</td>
+<td class="cm">
+<input type="checkbox" class="checkbox" name="CHK$client7allow" value="cl7allow">Valid
+<input type="button" class="br1" value="Info" onclick="show('clientinfo7')">
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client7.crt" type="application/octet-stream">Cert 7</a>
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client7.key" type="application/octet-stream">Key 7</a>
+<input type="hidden" name="TXT$client7exist">
+</td>
+<td class="cr">Click to download</td>
+</tr>
+
+<tr class="server-certs" id="client8">
+<td class="cl">Export client 8 key and certificate:</td>
+<td class="cm">
+<input type="checkbox" class="checkbox" name="CHK$client8allow" value="cl8allow">Valid
+<input type="button" class="br1" value="Info" onclick="show('clientinfo8')">
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client8.crt" type="application/octet-stream">Cert 8</a>
+<a class="br1" href="./download.cgi?/etc/openvpn/certs/server/client8.key" type="application/octet-stream">Key 8</a>
+<input type="hidden" name="TXT$client8exist">
+</td>
+<td class="cr">Click to download</td>
+</tr>
+
+<!--
+<tr class="server-shared"><td colspan="3"></td></tr>	
+<tr class="server-shared">
+<th colspan="3">OpenVPN create shared key</th>
+</tr>
+-->
+<tr class="server-shared">
+    <td class="cl">Shared key modification :</td>
+    <td class="cm">PLZ$ssharedkey<input type="button" class="br1" value="Info" onclick="show('sharedinfoserver')"></td>
+    <td class="cr">Currently used shared key</td>
+</tr>
+
+<tr class="server-shared">
+    <td class="cl">Create shared key :</td>
+    <td class="cm"><input type="button" class="br1" value="Create" name="sharedkey" onclick="createnow('sharedkey')"></td>
+    <td class="cr"><span id="create_info_shared">Click to create new shared key.</span></td>
+</tr>
+<!--
+<tr class="server-shared"><td colspan="3"></td></tr>	
+<tr class="server-shared">
+<th colspan="3">OpenVPN export shared key</th>
+</tr>
+-->
+<tr class="server-shared" id="sharedkey">
+    <td class="cl">Export shared key :</td>
+    <td class="cm"><a class="br1" href="./download.cgi?/etc/openvpn/certs/server/shared.key" type="application/octet-stream">Download</a><input type="hidden" name="TXT$sharedexist"></td>  
+    <td class="cr">Click to download</td>
+</tr>
+
+</form>
+
+<!-- ACHTUNG ! Hier folgen die Client formen fuer die buttons !!! -->
+<tr class="client">
+<td class="cl">Import key or certificates :</td>
+<td class="cm">
+    <form name="anyfile" method="post" action="/cgi-bin/openvpn_cfg.cgi?anyfile" ENCTYPE="multipart/form-data">
+    <input type="file" class="file" name="TXT$anyfile" size="25">
+    <input type="button" class="br1" value="Import" onclick="document.anyfile.submit()">
+    </form>
+</td>
+<td class="cr">Import single file or configuration buddle</td>
+</tr>
+
+<tr>
+<td colspan="3" align="center">INF-TXT</td>
+</tr>
+
+<tr>
+<td colspan="3"><script type="text/javascript">access(document.form.TXT$submit.value);</script></td>
+</tr>
+</table>
+
+</body>
+<script language="JavaScript" src="../html/openvpn_cfg.js"></script>
+</html>

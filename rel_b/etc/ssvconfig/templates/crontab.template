@@ -1,0 +1,11 @@
+# /etc/crontab: system-wide crontab
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# m  h   D M W  user command
+# NTP:
+{% ?WUI_chk_setup%ntp%%#%#% %}{% ?WUI_sel_sync%none%#%%% %}{% $SSV_TIME_SYNC_M %} {% $SSV_TIME_SYNC_H %} * * * root /etc/ssvconfig/init.d/time.sh settime
+# AWS:
+#{% ?SSV_OPENVPN_CLIENT_AWS%on%%#%#% %}*/10 * * * * root /etc/ssvconfig/bin/aws-refresh
+# VPN auto connect
+#1 9 * * * root /etc/ssvconfig/bin/openvpn_auto.sh
+#1 15 * * * root /etc/ssvconfig/bin/openvpn_auto.sh

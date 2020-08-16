@@ -1,0 +1,139 @@
+<html>
+<head>
+<title>Status</title>
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+</head>
+<body leftmargin="10" marginwidth="10" topmargin="10" marginheight="10">
+<table border="0" width="100%" height="95%">
+<tr height="40">
+<td height="40"><h3 align="left">Status</h3></td>
+</tr>
+<tr>
+<td align="left" valign="top">
+<table class="t1" cellspacing="0">
+<tr><th colspan="3" >System status</th></tr>
+<tr>
+<td class="cl" valign="middle">System name :</td>
+<td class="cm">{#hostname#}</td>
+<td class="cr">System host name</td>
+</tr>
+<tr>
+<td class="cl">System location :</td>
+<td class="cm">{#location#}</td>
+<td class="cr">Location information</td>
+</tr>
+<tr>
+<td class="cl">Contact :</td>
+<td class="cm">{#contact#}</td>
+<td class="cr">Contact information</td>
+</tr>
+<tr>
+<td class="cl">Time and date :</td>
+<td class="cm"><div style="color:#FF0000;">{#date#} {#time#}</div></td>
+<td class="cr">Current time and date of this system</td>
+</tr>
+
+<tr class="sp"><td colspan="3"></td></tr>
+<tr><th colspan="3">Status LAN1</th></tr>
+<tr>
+<td class="cl">IP address :</td>
+<td class="cm">{#eth0_ip#}</td>
+<td class="cr">Current device IP address</td>
+</tr>
+<tr>
+<td class="cl">Subnet mask :</td>
+<td class="cm">{#eth0_netmask#}</td>
+<td class="cr">Current subnet mask of the local network</td>
+</tr>
+<tr>
+<td class="cl">MAC Address :</td>
+<td class="cm">{#eth0_mac#}</td>
+<td class="cr">Physical media address</td>
+</tr>
+<tr>
+<td class="cl">Alias IP address :</td>
+<td class="cm">{#eth00_ip#}</td>
+<td class="cr">Current alias IP address</td>
+</tr>
+<tr>
+<td class="cl">Alias subnet mask :</td>
+<td class="cm">{#eth00_netmask#}</td>
+<td class="cr">Current subnet mask of the alias network</td>
+</tr>
+<!--
+<tr class="sp"><td colspan="3"></td></tr>
+<tr><th colspan="3">Status LAN2</th></tr>
+<tr>
+<td class="cl">IP address :</td>
+<td class="cm">{#eth1_ip#}</td>
+<td class="cr">Current device IP address</td>
+</tr>
+<tr>
+<td class="cl">Subnet mask :</td>
+<td class="cm">{#eth1_netmask#}</td>
+<td class="cr">Current subnet mask of the local network</td>
+</tr>
+<tr>
+<td class="cl">MAC Address :</td>
+<td class="cm">{#eth1_mac#}</td>
+<td class="cr">Physical media address</td>
+</tr>
+
+<tr class="sp"><td colspan="3"></td></tr>
+<tr><th colspan="3">Status WAN (PPP)</th></tr>
+<tr>
+<td class="cl">IP address :</td>
+<td class="cm">{#ppp0_ip#}</td>
+<td class="cr">Current device IP address</td>
+</tr>
+<tr>
+<td class="cl">Subnet mask :</td>
+<td class="cm">{#ppp0_netmask#}</td>
+<td class="cr">Current subnet mask of the world area network</td>
+</tr>
+-->
+<tr class="sp"><td colspan="3"></td></tr>
+<tr><th colspan="3">Status VPN</th></tr>
+<tr>
+<td class="cl">IP address :</td>
+<td class="cm" >{#vpn_ip#}</td>
+<td class="cr">Current device IP address</td>
+</tr>
+<tr>
+<td class="cl">Subnet mask :</td>
+<td class="cm">{#vpn_netmask#}</td>
+<td class="cr">Current subnet mask of the network</td>
+</tr>
+
+<tr class="sp"><td colspan="3"></td></tr>
+<tr><th colspan="3">Status DNS</th></tr>
+<tr>
+<td class="cl">Primary DNS server :</td>
+<td class="cm">{#dns1#}</td>
+<td class="cr">Current 1st DNS server address</td>
+</tr>
+<tr>
+<td class="cl">Secondary DNS server :</td>
+<td class="cm">{#dns2#}</td>
+<td class="cr">Current 2nd DNS server address</td>
+</tr>
+<tr>
+<td class="cl">Tertiary DNS server :</td>
+<td class="cm">{#dns3#}</td>
+<td class="cr">Current 3rd DNS server address</td>
+</tr>
+
+<tr class="sp"><td colspan="3"></td></tr>
+<tr><th colspan="3">Status route</th></tr>
+<tr>
+<td class="cl">Default gateway :</td>
+<td class="cm">{#gateway#}</td>
+<td class="cr">Current default gateway</td>
+</tr>
+<tr><td colspan="3" align="center">{#response#}</td></tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

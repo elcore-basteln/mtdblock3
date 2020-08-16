@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../css/root.css" media="all">
+<link rel="icon" type="image/x-icon" href="../css/images/favicon.ico">
+<link rel="shortcut icon" type="image/x-icon" href="../css/images/favicon.ico">
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/wui.functions.js"></script>
+<title>{$page.name$}</title>
+</head>
+<body>
+<div id="page">
+    <div id="header">
+        <h1><a href="http://www.elcore2400.com"><img src="../css/images/logo.png" /></a></h1>
+    </div>
+    <div id="navigation-top">
+        <ul>
+            <li class="first">&nbsp;</li>
+            <li>&nbsp;</li>
+	    <li>&nbsp;</li>
+            <li class="last" onmouseout="$('#navigation-top-sub').hide()" onmouseover="$('#navigation-top-sub').show()">
+                <a href="#">{$language$}&nbsp;<img src="../css/images/{#lang#}.png"></a>
+                <div id="navigation-top-sub" class="navigation-top-sub" style="display:none;">
+                <a href="#" onclick="wui.set_lang('{#sid#}','de')"><img src="../css/images/de.png">{$language.de$}</a>
+                <a href="#" onclick="wui.set_lang('{#sid#}','gb')"><img src="../css/images/gb.png">{$language.gb$}</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div id="header-image">
+        <img src="../css/images/header-startpage.jpg" />
+    </div>
+    <div id="page-inner">
+        <div id="navigation-left">
+        </div>
+        <div id="content">
+            <h1>{$access.login$}</h1>
+	    <form action="access.cgi?{#sid#}&action=login" method="post">
+            <span class="label">{$access.username$}</span><input type="text" name="user" value="" class="size-l"/><div class="clear"></div>
+            <span class="label">{$access.password$}</span><input type="password" name="pass" value="" class="size-l"/><div class="clear"></div>
+            <span class="label"></span><input type="submit" value="{$access.enter$}" class="submit"  name="submit" />
+            <form>
+        </div>
+        <div id="ticker">
+        </div>
+        <div class="clear"></div>
+        <div style="font-size:12px;color:red;width:100%;text-align:center;"><strong>{#response#}</strong></div>
+    </div>
+    <div id="footer">
+        <ul>
+            <li class="first"><a href="#"></a></li>
+            <li><a href="#"></a></li>
+            <li><a href="#"></a></li>
+            <li class="last"><a href="#"></a></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

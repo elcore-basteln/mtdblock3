@@ -1,0 +1,6 @@
+#!/bin/sh
+
+if [ $IFACE = "eth0" ]; then
+    /etc/ssvconfig/init.d/upnp.sh stop eth0 >/dev/null
+fi
+exit 0

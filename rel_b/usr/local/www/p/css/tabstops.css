@@ -1,0 +1,32 @@
+@charset "utf-8";
+/* CSS Document */
+
+/**
+ * Tabstops
+ *
+ * Vordefinierte Tabulatoren
+ */
+
+.tabstop-xs, .tabstop-s, .tabstop-m, .tabstop-l, .tabstop-xl{
+	float: left;
+}
+
+.tabstop-xs{
+	width: 40px;
+}
+
+.tabstop-s{
+	width: 80px;
+}
+
+.tabstop-m{
+	width: 120px;
+}
+
+.tabstop-l{
+	width: 160px;
+}
+
+.tabstop-xl{
+	width: 200px;
+}

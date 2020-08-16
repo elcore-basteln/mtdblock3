@@ -1,0 +1,54 @@
+#!/bin/sh
+
+. /etc/ssvconfig/bin/ssvfunction
+. /etc/ssvconfig/config/modem
+
+[ "x$SSV_MODEM_TYPE" = "xnone" -o "x$SSV_MODEM_TYPE" = "x" ] && exit 1
+
+#poll interval
+STIME=5
+#poll device at "/proc/net/dev"
+DEV="ppp0:"
+
+case "$SSV_MODEM_TYPE" in
+	analog)
+		TIME=120
+		;;
+	isdn)
+		TIME=60
+		;;
+	gprs)
+		TIME=240
+		;;
+	dsl)
+		TIME=60
+		;;
+	*)
+		TIME=30
+esac
+
+LOOPS=$(($TIME/$STIME))
+
+MYCMD='/etc/ssvconfig/init.d/modem stop2start'
+pppfailed()
+{
+	sleep $STIME
+	logger -t ppp-watchdog "state $1 at exit"
+	exec $MYCMD >/dev/null 2>/dev/null
+}
+
+while true ; do
+	test $LOOPS -ne 0 || pppfailed 1
+	grep -q "$DEV" /proc/net/dev 2>/dev/null && break
+	LOOPS=$(($LOOPS-1))
+	sleep $STIME
+done
+
+while true ; do
+	grep -q "$DEV" /proc/net/dev 2>/dev/null || break
+	sleep $STIME
+done
+
+pppfailed 2
+
+exit 0

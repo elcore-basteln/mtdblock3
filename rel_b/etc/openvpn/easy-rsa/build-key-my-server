@@ -1,0 +1,18 @@
+#!/bin/sh
+
+
+openssl req -days 3650 -nodes -new -keyout $1.key -out $1.csr -extensions server -config $KEY_CONFIG <<EOF1
+
+
+
+
+
+server
+
+
+
+EOF1
+openssl ca -days 3650 -out $1.crt -in $1.csr -extensions server -config $KEY_CONFIG <<EOF2
+y
+y
+EOF2

@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# Description:      ssvconfig functions
+# Version:          3.01  21.07.2012  ene@SSV
+#
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/sbin:$PATH
+export LD_LIBRARY_PATH=/usr/local/lib
+
+VPN_STATE_FILE="/var/state/vpn-watch.sta"
+
+# build file by template at destination
+# mktmpl <ssvconfig> <tempfile> <destpath> <opt>
+mktmpl()
+{
+	tmpl2file /etc/ssvconfig/templates/$2$4.template /tmp/$2.$$ /etc/ssvconfig/config/$1
+	if [ -f $3/$2 ]
+	then
+		MD1=`md5sum $3/$2 | cut -b1-32`
+		MD2=`md5sum /tmp/$2.$$ | cut -b1-32`
+		if [ "$MD1" = "$MD2" ]
+		then
+			rm -f /tmp/$2.$$
+			return
+		fi
+	fi
+	mv /tmp/$2.$$ $3/$2
+}
+
+# ssv_tmpl2file <ssvconfig> <tempfile> <destpath> <opt>
+ssv_tmpl2file(){
+    tmpl2file /etc/ssvconfig/templates/$2$4.template /tmp/$2.$$ /etc/ssvconfig/config/$1
+	if [ -f $3/$2 ]; then
+		MD1=`md5sum $3/$2 | cut -b1-32`
+		MD2=`md5sum /tmp/$2.$$ | cut -b1-32`
+		if [ "$MD1" = "$MD2" ]; then
+			rm -f /tmp/$2.$$
+			return
+		fi
+	fi
+	mv /tmp/$2.$$ $3/$2
+}
+
+WUI_LOGGING_LVL=7
+#parameter $1=lvl, $2=message
+#lvl 1=alert ... 7=debug
+ssv_logger(){
+    if [ $1 -le $WUI_LOGGING_LVL ]; then
+        logger -p $1 -t $(basename $0) "$2"
+    fi
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../css/root.css" media="all">
+<link rel="icon" type="image/x-icon" href="../css/images/favicon.ico">
+<link rel="shortcut icon" type="image/x-icon" href="../css/images/favicon.ico">
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/wui.functions.js"></script>
+<script type="text/javascript">
+var url="fde_data.cgi?{#sid#}&action=get";
+var jds = new Array();
+jds.d = new Object();
+jds.f = new Object();
+function subscribe(id,v,f) {
+	if (!id || id == "") return;    /* exit if parameter empty */
+	jds.d[id] = v;
+	if(f) jds.f[id] = f;
+}
+function init(){
+	$.get(url, ajax_cb);
+}
+function ajax_cb(r) {
+	var o=eval('('+r+')');
+	var str="";
+	for (var v in o.data) {
+		if (v.search(/ERROR/) != -1) {
+			var a=o.data[v].split("|");
+			if (parseInt(a[0]) != 0) {
+			str+='<tr><td><b>'+a[1]+'</b><br>('+a[2]+')</td><td>'+a[3]+(a[4]!=''?'<br><i>&nbsp;'+a[4]+'</i>':'')+'</td><td>'+date(a[0])+'</td></tr>';
+			}
+		}
+	}
+	if (str == "")
+		str="<tr><th>{$messages.no$}</th></tr>";
+	else
+		str="<tr><th>Nr</th><th>{$messages.desc$}</th><th>{$messages.time$}</th></tr>"+str;
+	$("#errors").html(str);
+}
+
+function pad(v) {
+	return (v.toString().length < 2) ? '0' + v : v;
+}
+function date(t){
+	var t = new Date(t*1000);
+	return pad(t.getUTCDate())+"-"+pad(t.getUTCMonth() + 1)+"-"+t.getUTCFullYear()+" "+pad(t.getUTCHours())+":"+pad(t.getUTCMinutes())+":"+pad(t.getUTCSeconds());
+}
+</script>
+<title>{$page.name$}</title>
+</head>
+<body onload="init();">
+<div id="page">
+    <div id="header">
+        <h1><a href="http://www.elcore2400.com"><img src="../css/images/logo.png" /></a></h1>
+    </div>
+    <div id="navigation-top">
+        <ul>
+            <li class="first"><a href="webgui.cgi?{#sid#}&html=overview">{$menu.plant$}</a></li>
+            <li>&nbsp;</li>
+            <li><a href="userconf.cgi?{#sid#}">{$menu.userconf$}</a></li>
+            <li class="last" onmouseout="$('#navigation-top-sub').hide()" onmouseover="$('#navigation-top-sub').show()">
+                <a href="#">{$language$}&nbsp;<img src="../css/images/{#lang#}.png"></a>
+                <div id="navigation-top-sub" class="navigation-top-sub" style="display:none;">
+                <a href="#" onclick="wui.set_lang('{#sid#}','de')"><img src="../css/images/de.png">{$language.de$}</a>
+                <a href="#" onclick="wui.set_lang('{#sid#}','gb')"><img src="../css/images/gb.png">{$language.gb$}</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div id="header-image">
+        <img src="../css/images/header-startpage.jpg" />
+    </div>
+    <div id="page-inner">
+        <div id="navigation-left">
+            <ul>
+		<li class="first"><a href="webgui.cgi?{#sid#}&html=overview">{$menu.overview$}</a></li>
+		<!--<li><a href="webgui.cgi?{#sid#}&html=archive">{$menu.archive$}</a></li>-->
+		<li><a href="webgui.cgi?{#sid#}&html=messages"><u>{$menu.messages$}</u></a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=parameter">{$menu.config$}</a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=data">{$menu.data$}</a></li>
+            </ul>
+        </div>
+        <div id="content" style="padding-top:0px;">
+            <h1>{$menu.messages$}</h1>
+	    <h4>{$menu.plant$} {#serial#}</h4>
+	    <br>
+	    <table class="errortable" id="errors">
+	    </table>
+        </div>
+        
+        <div id="ticker">
+        </div>
+        
+        <div class="clear"></div>
+    </div>
+    <div id="footer">
+        <ul>
+            <li class="first"><a href="access.cgi?{#sid#}&action=logout">{$menu.logout$}</a></li>
+            <li><a href="#"></a></li>
+            <li><a href="#"></a></li>
+            <li class="last"><a href="#"></a></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

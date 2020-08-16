@@ -1,0 +1,31 @@
+#! /bin/sh
+
+. /etc/ssvconfig/bin/ssvfunction
+. /etc/ssvconfig/config/services.cfg
+
+DAEMON=/usr/local/sbin/mgmtd
+NAME=mgmtd
+DESC="mgmtd SSC management daemon"
+
+#logger -t script.mgmtd "started with $1"
+set -e
+
+case "$1" in
+    start)
+	[ "$WUI_chk_mgmtd" = "on" ] || exit 0
+	echo -n "Starting $DESC: "
+	start-stop-daemon -q --start -x $DAEMON -- -s
+	[ $? -eq 0 ] && echo "done" || echo "faild"
+	;;
+    stop)
+	echo -n "Stopping $DESC: "
+	start-stop-daemon --stop -q -x $DAEMON
+	echo
+	;;
+    *)
+	echo "Usage: $0 {start|stop}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

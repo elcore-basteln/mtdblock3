@@ -1,0 +1,87 @@
+<html>
+<head>
+<title>Remote Access Configuration</title>
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+<script language="JavaScript" src="../js/wui.functions.js"></script>
+<script language="JavaScript"><!--
+function send(command){
+    var doc=document.form;
+    doc.action.value=command;
+    if(command=="cancel"){
+        doc.reset();
+        return;
+    } else {
+	if(doc.chk_service.checked){		
+	    if(!wui.value.isInRange(doc.ssh_port.value, 1, 65535)){
+		alert ("Error ! Value must be within 1 - 65535 !");
+		return;
+	    }
+	    if(!wui.value.isInRange(doc.ssh_kri.value, 60, 86400)){
+		alert ("Error ! Value must be within 60 - 86400 !");
+		return;
+	    }
+	}
+	doc.submit();
+    }
+}
+function keygen(){
+    wui.draw.boxWait("Generating SSH keys");
+    wui.ajax.dataSend("/cgi-bin/openssh.cgi?{#sid#}&action=keygen", "", ajax_cb);
+}
+function ajax_cb(r) {
+    wui.draw.boxClose();
+    jobj=eval('('+r+')');
+    wui.draw.boxInfo(jobj.status.code,"Info",jobj.status.info);
+}
+--></script>
+</head>
+<body leftmargin="10" marginwidth="10" topmargin="10" marginheight="10">
+<h3>Remote access configuration</h3>
+
+<form name="form" method="post" action="/cgi-bin/openssh.cgi?{#sid#}">
+<table width="100%" cellspacing="0" class="t1">
+<tr>
+<th colspan="3">OpenSSH configuration</th>
+</tr>
+<tr id="line0">
+<td class="cl">Enable/Disable service :</td>
+<td class="cm">
+<div style="float:left;padding-top:4px;"><input type="checkbox" class="checkbox" name="chk_service" value="on" {#chk_service#}></div>
+<div class="status" style="background-image:url(../images/{#status#}.gif)" title="Running/Stopped"></div></td>
+<td class="cr">Enable or disable OpenSSH service</td>
+</tr>
+<tr id="line1">
+<td class="cl">Port :</td>
+<td class="cm"><input type="text" class="text" name="ssh_port" value="{#ssh_port#}" maxlength="6" size="6"></td>
+<td class="cr">Port to listen on</td>
+</tr>
+<tr id="line2">
+<td class="cl">Key regeneration interval [sec] :</td>
+<td class="cm"><input type="text" class="text" name="ssh_kri" value="{#ssh_kri#}" maxlength="6" size="6"></td>
+<td class="cr">Interval until the key will be regenerated</td>
+</tr>
+<tr id="line3">
+<td class="cl">Permit root login :</td>
+<td class="cm"><input type="checkbox" class="checkbox" name="chk_rootlogin" value="on" {#chk_rootlogin#}></td>
+<td class="cr">Allow or deny root to login</td>
+</tr>
+<tr id="line4">
+<td class="cl">Permit empty passwords :</td>
+<td class="cm"><input type="checkbox" class="checkbox" name="chk_emptypass" value="on" {#chk_emptypass#}></td>
+<td class="cr">Allow or deny empty user passwords</td>
+</tr>
+<tr id="line5">
+<td class="cl">RSA key fingerprint :</td>
+<td class="cm"><div style="float:left;padding-top:4px;">{#rsa_key#}</div><input type="button" class="br1" onclick="keygen()" value="Recreate key"></td>
+<td class="cr"><span id="hostkey"></span></td>
+</tr>
+<tr>
+<td colspan="3">{#response#}<input type="hidden" name="action" value="cancel"></td>
+</tr>
+<tr>
+<td colspan="3"><script language="JavaScript">wui.draw.buttons(1);</script></td>
+</tr>
+</table>
+</form>
+</body>
+</html>

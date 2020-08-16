@@ -1,0 +1,229 @@
+<html>
+<head>
+<title>Time and date</title>
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+<script type="text/javascript" src="../js/wui.functions.js"></script>
+<script language="JavaScript"><!--
+var jobj;
+var VAR_DAT = "{#year#}-"+({#month#} < 10 ? "0":"")+"{#month#}-"+({#day#} < 10 ? "0":"")+"{#day#}";
+var VAR_STU = {#hour#};
+var VAR_MIN = {#min#};
+var VAR_SEK = {#sec#};
+function send(command)
+{
+    var doc = document.form;
+    doc.action.value = command;
+    if (command == "cancel") { doc.reset(); return; }
+    if (doc.chk_setup[0].checked) {
+        if (!wui.value.isInRange(doc.year.value,2000,2099) || !wui.value.isInRange(doc.day.value,1,31)
+            || !wui.value.isInRange(doc.min.value,0,59) || !wui.value.isInRange(doc.sec.value,0,59)
+            || !wui.value.isInRange(doc.hour.value,0,23)) {
+            alert(" Error ! Only certain numbers are allowed !");
+            return;
+        }
+    }
+    doc.submit();
+}
+function ajax_cb(r)
+{
+    wui.draw.boxClose();
+    jobj = eval('('+r+')');
+    if (jobj.status.code == 0) {
+        wui.draw.boxInfo(0,"Info", jobj.status.info);
+        VAR_DAT = jobj.data.year+(jobj.data.month < 10 ? "-0":"-")+jobj.data.month+(jobj.data.day < 10 ? "-0":"-")+jobj.data.day;
+        VAR_STU = parseInt(jobj.data.hour);
+        VAR_MIN = parseInt(jobj.data.min);
+        VAR_SEK = parseInt(jobj.data.sec);
+    } else {
+        wui.draw.boxInfo(1,"Error", jobj.status.info);
+    }
+}
+function synctime()
+{
+    wui.draw.boxWait("Synchronize");
+    wui.ajax.dataSend("time.cgi?{#sid#}&action=synctime", "", ajax_cb);
+}
+function hide()
+{
+    var doc = document.form;
+    if (doc.sel_ntp.options[doc.sel_ntp.selectedIndex].value == "user")
+        wui.element.hide("4","");
+    else
+        wui.element.hide("4","none");
+    if (doc.chk_setup[0].checked) {
+        wui.element.hide("1,2","");
+        wui.element.hide("3,5,6","none");
+    } else {
+        wui.element.hide("1,2","none");
+        wui.element.hide("3,5,6","");
+    }
+}
+function updatetime()
+{
+    VAR_SEK += 1;
+    if(VAR_SEK >= 60) { VAR_SEK = 0; VAR_MIN++; }
+    if(VAR_MIN >= 60) { VAR_MIN = 0; VAR_STU++; }
+    if(VAR_STU >= 24) VAR_STU = 0;
+    var Hour = ((VAR_STU < 10) ? "0" : "");
+    var Minute = ((VAR_MIN < 10) ? ":0" : ":");
+    var Second = ((VAR_SEK < 10) ? ":0" : ":");
+    document.getElementById('time').innerHTML = VAR_DAT + " " + Hour + VAR_STU + Minute + VAR_MIN + Second + VAR_SEK;
+}
+function ZeitDatum()
+{
+    var doc = document.form;
+    Jetzt = new Date();
+    // aktuelles Datum
+    doc.day.value = ((Jetzt.getDate() < 10) ? "0" : "") + Jetzt.getDate();
+    doc.sel_month.options.selectedIndex = Jetzt.getMonth();
+    doc.year.value = Jetzt.getFullYear();
+    //aktuelle Uhrzeit
+    doc.hour.value = ((Jetzt.getHours() < 10) ? "0" : "") + Jetzt.getHours();
+    doc.min.value = ((Jetzt.getMinutes() < 10) ? "0" : "") + Jetzt.getMinutes();
+    doc.sec.value = ((Jetzt.getSeconds() < 10) ? "0" : "") + Jetzt.getSeconds();
+}
+function init()
+{
+    hide();
+    updatetime();
+    ZeitDatum();
+    var aktiv = window.setInterval("updatetime()", 1000);
+}
+--></script>
+</head>
+<body onload="init()" leftmargin="10" marginwidth="10" topmargin="10" marginheight="10">
+<h3>Time and date configuration</h3>
+
+<form name="form" method="post" action="/cgi-bin/time.cgi?{#sid#}">
+<table width="100%" cellspacing="0" class="t1">
+<tr>
+<th class="tk" colspan="3">Local timezone configuration</th>
+</tr>
+<tr>
+<td class="cl">Timezone :</td>
+<td class="cm"><select class="cmb" name="sel_tz" size="1">
+<option value="Europe/Berlin" {#sel_tz#}>CET Europe/Berlin
+<option value="Etc/UTC" {#sel_tz#}>UTC
+<option value="Etc/GMT+12" {#sel_tz#}>UTC-12:00
+<option value="Etc/GMT+11" {#sel_tz#}>UTC-11:00
+<option value="Etc/GMT+10" {#sel_tz#}>UTC-10:00
+<option value="Etc/GMT+9" {#sel_tz#}>UTC-09:00
+<option value="Etc/GMT+8" {#sel_tz#}>UTC-08:00
+<option value="Etc/GMT+7" {#sel_tz#}>UTC-07:00
+<option value="Etc/GMT+6" {#sel_tz#}>UTC-06:00
+<option value="Etc/GMT+5" {#sel_tz#}>UTC-05:00
+<option value="Etc/GMT+4" {#sel_tz#}>UTC-04:00
+<option value="Etc/GMT+3" {#sel_tz#}>UTC-03:00
+<option value="Etc/GMT+2" {#sel_tz#}>UTC-02:00
+<option value="Etc/GMT+1" {#sel_tz#}>UTC-01:00
+<option value="Etc/GMT+0" {#sel_tz#}>UTC+00:00
+<option value="Etc/GMT-1" {#sel_tz#}>UTC+01:00
+<option value="Etc/GMT-2" {#sel_tz#}>UTC+02:00
+<option value="Etc/GMT-3" {#sel_tz#}>UTC+03:00
+<option value="Etc/GMT-4" {#sel_tz#}>UTC+04:00
+<option value="Etc/GMT-5" {#sel_tz#}>UTC+05:00
+<option value="Etc/GMT-6" {#sel_tz#}>UTC+06:00
+<option value="Etc/GMT-7" {#sel_tz#}>UTC+07:00
+<option value="Etc/GMT-8" {#sel_tz#}>UTC+08:00
+<option value="Etc/GMT-9" {#sel_tz#}>UTC+09:00
+<option value="Etc/GMT-10" {#sel_tz#}>UTC+10:00
+<option value="Etc/GMT-11" {#sel_tz#}>UTC+11:00
+<option value="Etc/GMT-12" {#sel_tz#}>UTC+12:00
+</select></td>
+<td class="cr">Choose your timezone</td>
+</tr>
+<tr>
+<td class="sp" colspan="3">&nbsp;</td>
+</tr>
+<tr>
+<th colspan="3">Time and date configuration</th>
+</tr>
+<tr>
+<td class="cl">Time setup :</td>
+<td class="cm"><input type="radio" class="radio" name="chk_setup" onclick="hide();" value="man" {#chk_setup#}> manually &nbsp; &nbsp; 
+<input type="radio" class="radio" name="chk_setup" onclick="hide();" value="ntp" {#chk_setup#}> automatically</td>
+<td class="cr">Set time and date manually or over NTP</td>
+</tr>
+<tr id="line1">
+<td class="cl">Date :</td>
+<td class="cm">
+<input type="text" class="text" name="year" value="{#year#}" maxlength="4" size="4"> 
+<select  class="cmb" name="sel_month" size="1">
+<option value="1" {#sel_month#}>January
+<option value="2" {#sel_month#}>February
+<option value="3" {#sel_month#}>March
+<option value="4" {#sel_month#}>April
+<option value="5" {#sel_month#}>May
+<option value="6" {#sel_month#}>June
+<option value="7" {#sel_month#}>July
+<option value="8" {#sel_month#}>August
+<option value="9" {#sel_month#}>September
+<option value="10" {#sel_month#}>October
+<option value="11" {#sel_month#}>November
+<option value="12" {#sel_month#}>December
+</select> <input type="text" class="text" name="day" value="{#day#}" maxlength="2" size="2"></td>
+<td class="cr">Current date (YYYY - month - DD)</td>
+</tr>
+<tr id="line2">
+<td class="cl">Time :</td>
+<td class="cm">
+<input type="text" class="text" name="hour" value="{#hour#}" maxlength="2" size="2"> : 
+<input type="text" class="text" name="min" value="{#min#}" maxlength="2" size="2"> : 
+<input type="text" class="text" name="sec" value="{#sec#}" maxlength="2" size="2"></td>
+<td class="cr">Current time (HH : MM : SS)</td>
+</tr>
+</tr>
+<tr id="line3">
+<td class="cl">NTP server list :</td>
+<td class="cm"><select class="cmb" name="sel_ntp" onclick="hide()" size="1">
+<option value="pool.ntp.org" {#sel_ntp#}>WORLD pool.ntp.org
+<option value="europe.pool.ntp.org" {#sel_ntp#}>EU europe.pool.ntp.org
+<option value="de.pool.ntp.org" {#sel_ntp#}>DE de.pool.ntp.org
+<option value="north-america.pool.ntp.org" {#sel_ntp#}>US north-america.pool.ntp.org
+<option value="ntp.nasa.gov" {#sel_ntp#}>US ntp.nasa.gov
+<option value="user" {#sel_ntp#}>(user defined)
+</select></td>
+<td class="cr">Choose an NTP server from list
+</td>
+<tr id="line4">
+<td class="cl">NTP server user defined :</td>
+<td class="cm"><input type="text" class="text" name="ntp" value="{#ntp#}" maxlength="70" size="30"></td>
+<td class="cr">Enter address of an NTP server</td>
+</tr>
+<tr id="line5">
+<td class="cl">Time synchronize interval :</td>
+<td class="cm">
+<select class="cmb" name="sel_sync" size="1">
+ <option value="none" {#sel_sync#}>Disabled
+ <option value="1" {#sel_sync#}>1 Hour
+ <option value="6" {#sel_sync#}>6 Hours
+ <option value="12" {#sel_sync#}>12 Hours
+ <option value="24" {#sel_sync#}>24 Hours
+</select></td>
+<td class="cr">Choose synchronize interval
+</td>
+<tr id="line6">
+<td class="cl">NTP server test :</td>
+<td class="cm"><input type="button" name="sync" class="br1" onclick="synctime();" value="Sync"></td>
+<td class="cr">Synchronize now</td>
+<tr>
+<td class="sp" colspan="3"></td>
+</tr>
+<tr>
+<th colspan="3">Current system time</th>
+</tr>
+<tr>
+<td class="cl">Time and date :</td>
+<td class="cm"><div id="time" style="FONT-FAMILY:Arial;font-weight:bold;font-size:12px;color:#FF0000;">datum:uhrzeit</div></td>
+<td class="cr">Time and date of this system is shown</td>
+</tr>
+<tr>
+<td colspan="3">{#response#}<input type="hidden" name="action" value="cancel"></td>
+</tr>
+<tr>
+<td colspan="3"><script language="JavaScript">wui.draw.buttons(1);</script></td>
+</tr>
+</table>
+</form>
+</body>
+</html>

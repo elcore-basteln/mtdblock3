@@ -1,0 +1,321 @@
+#!/bin/sh
+
+. /etc/ssvconfig/bin/ssvfunction
+. /etc/ssvconfig/config/openvpn
+
+CLIENT_STATIC_IP="yes"
+
+start()
+{	
+	if [ "x$SSV_OPENVPN_ON" = "xon" ]; then
+		echo -n "Starting Openvpn .........................................."
+		if [ "x$SSV_OPENVPN_DEV" = "xtun" ]; then
+			modprobe tun
+			mkdir -p /dev/net
+			mknod /dev/net/tun c 10 200 2>/dev/null
+		else
+			mknod /dev/tap0 c 36 16 2>/dev/null
+		fi
+		set -e
+		if [ "x$SSV_OPENVPN_SC" = "xclient" ]; then
+			if [ "x$SSV_OPENVPN_CLIENT_AWS" = "xon" ]; then
+				# Refresh Server IP
+				/etc/ssvconfig/bin/aws-refresh start &
+			fi
+			if [ "x$SSV_OPENVPN_AUTHBY" = "xcerts" -a \
+			     "x$SSV_OPENVPN_CLIENT_MODE" = "xbridge" ]; then
+				/etc/ssvconfig/init.d/bridge start
+			fi
+			openvpn --daemon --config /etc/openvpn/client.ovpn \
+				--complete '/etc/ssvconfig/bin/vpn-watch complete' \
+				--up '/etc/ssvconfig/bin/vpn-watch up' \
+				--down '/etc/ssvconfig/bin/vpn-watch down' \
+				--up-restart
+
+			/etc/ssvconfig/bin/vpn-watch start
+		else
+			if [ "x$SSV_OPENVPN_SERVER_CMODE" = "xbridge" -a \
+			     "x$SSV_OPENVPN_AUTHBY" = "xcerts" ]; then
+				# Stop LAN1, start bridge
+				/etc/ssvconfig/init.d/network.sh stop || true
+				/etc/ssvconfig/init.d/bridge start
+			fi
+			openvpn --daemon --config /etc/openvpn/server.ovpn
+		fi
+		echo "done"
+		set +e
+	fi
+}
+
+stop()
+{
+	/etc/ssvconfig/bin/vpn-watch stop
+	kill `cat /var/run/openvpn.pid 2>/dev/null` 2>/dev/null
+	if grep -q "br0:" /proc/net/dev
+	then
+		# Stop bridge, restore LAN1
+		/etc/ssvconfig/init.d/bridge stop
+		/etc/ssvconfig/init.d/network.sh start
+	fi
+}
+
+configure()
+{
+	mktmpl openvpn $SSV_OPENVPN_SC.ovpn /etc/openvpn .$SSV_OPENVPN_AUTHBY
+	/etc/ssvconfig/init.d/time.sh configure
+	validate
+}
+
+notify()
+{
+	if [ -f /var/run/openvpn.pid ]; then
+		kill -SIGHUP `cat /var/run/openvpn.pid` 2>/dev/null
+	fi
+}
+
+sharedkey()
+{
+	openvpn --genkey --secret /etc/openvpn/certs/server/shared.key
+}
+
+sharedinfo()
+{
+	cat /etc/openvpn/certs/$1/shared.key || echo "Shared key file don't exist"
+}
+
+serverkeys()
+{
+	# Update config with current informations
+	mktmpl system.cfg openssl.vars /etc/ssl
+
+	rm -rf /etc/openvpn/certs/server/*
+	cd /etc/openvpn/easy-rsa
+	. /etc/ssl/openssl.vars
+	./clean-all
+	./build-ca
+	./build-key-server server
+	if [ ! -s /etc/openvpn/certs/server/server.crt ]; then
+		logger -s -t openvpn "Server key generation failed!"
+		exit 3
+	fi
+	./build-dh
+	logger -t openvpn "Server keys done."
+}
+
+clientkeys()
+{
+	cd /etc/openvpn/easy-rsa
+	. /etc/ssl/openssl.vars
+	if [ $1 = "all" ] ; then
+		for i in 1 2 3 4 5 6 7 8
+		do
+			./build-key client$i
+		done
+	else
+		./build-key client$1
+	fi
+}
+
+serverinfo()
+{
+	#informationen ueber die certifikate im server modus
+	case "$1" in
+	    0)
+		NAME=/etc/openvpn/certs/server/server.key
+		if [ -f $NAME ]; then 
+			openssl rsa -noout -text -check -in $NAME
+			return 0
+		fi
+		;;
+	    1)
+		NAME=/etc/openvpn/certs/server/server.crt
+		if [ -f $NAME ]; then 
+			info=$(openssl x509 -fingerprint -text -noout -in $NAME)
+			if [ "x$info" != "x" ] ; then
+				echo "Server certificate information"
+				echo "$info"
+				return 0
+			fi
+		fi
+		;;
+	    2)
+		NAME=/etc/openvpn/certs/server/ca.crt
+		if [ -f $NAME  ]; then 
+			info=$(openssl x509 -fingerprint -text -noout -in $NAME)
+			if [ "x$info" != "x" ] ; then
+				echo "Root CA information"
+				echo "$info"
+			fi
+			return 0
+		fi
+		;;
+	    3)
+		NAME=/etc/openvpn/certs/server/dh1024.pem
+		if [ -f $NAME ]; then 
+			openssl dhparam -noout -text -check -in $NAME
+			return 0
+		fi
+		;;
+	esac
+	echo "No such file !"
+}
+
+clientinfo()
+{
+	#informationen ueber die certifikate im server modus
+	case "$1" in
+	    0)
+		NAME=/etc/openvpn/certs/server/ca.crt
+		if [ -f $NAME  ]; then 
+			info=$(openssl x509 -fingerprint -text -noout -in $NAME)
+			if [ "x$info" != "x" ] ; then
+				echo "Root CA information"
+				echo "$info"
+			fi
+			return 0
+		fi
+		;;
+	    [1-9])
+		NAME=/etc/openvpn/certs/server/client$1.crt
+		if [ -f $NAME ]; then 
+			info=$(openssl x509 -fingerprint -text -noout -in $NAME)
+			if [ "x$info" != "x" ] ; then
+				echo "Client$1 certificate information"
+				echo "$info"
+				return 0
+			fi
+		fi
+		;;
+	esac
+	echo "No such file !"
+}
+
+
+cclientinfo()
+{
+	#informationen ueber die certifikate im client modus
+	case "$1" in
+	    0)
+		NAME=/etc/openvpn/certs/client/client.key
+		if [ -f $NAME ]; then 
+			openssl rsa -noout -text -check -in $NAME
+			return 0
+		fi
+		;;
+	    1)
+		NAME=/etc/openvpn/certs/client/client.crt
+		if [ -f $NAME ]; then 
+			info=$(openssl x509 -fingerprint -text -noout -in $NAME)
+			if [ "x$info" != "x" ] ; then
+				echo "Client certificate information"
+				echo "$info"
+				return 0
+			fi
+		fi
+		;;
+	    2)
+		NAME=/etc/openvpn/certs/client/ca.crt
+		if [ -f $NAME  ]; then 
+			info=$(openssl x509 -fingerprint -text -noout -in $NAME)
+			if [ "x$info" != "x" ] ; then
+				echo "Root CA information"
+				echo "$info"
+			fi
+			return 0
+		fi
+		;;
+	    3)
+		NAME=/etc/openvpn/certs/client/client.p12
+		if [ -f $NAME  ]; then 
+			info=$(openssl pkcs12 -info -nodes -passin pass:"" -in $NAME)
+			if [ "x$info" != "x" ] ; then
+				echo "Pkcs12 information"
+				echo "$info"
+			fi
+			return 0
+		fi
+		;;
+	esac
+	echo "No such file !"
+}
+
+staticip()
+{
+	if [ "x$1" = "xoff" ]
+	then
+		echo "--disable"
+	else
+		if [ "$CLIENT_STATIC_IP" = "yes" -a \
+		     "x$SSV_OPENVPN_SERVER_CMODE" != "xbridge" ]
+		then
+			local index=$2
+			set -- `echo "$SSV_OPENVPN_SERVER_CNET" | sed -n 's/^\(.*\.\)\([0-9]*\)$/\1 \2/p'`
+			if [ "x$SSV_OPENVPN_DEV" = "xtap" ]; then
+				echo "--ifconfig-push $1$index $SSV_OPENVPN_SERVER_CSUB"
+			else
+				index=$(($index - 1))
+				echo "--ifconfig-push $1`echo $(($index * 4 + 2))` $1`echo $(($index * 4 + 1))`"
+			fi
+		fi
+	fi
+}
+
+validate()
+{
+	staticip $SSV_OPENVPN_SERVER_CL1_ALLOW 2 >/etc/openvpn/ccd/client1
+	staticip $SSV_OPENVPN_SERVER_CL2_ALLOW 3 >/etc/openvpn/ccd/client2
+	staticip $SSV_OPENVPN_SERVER_CL3_ALLOW 4 >/etc/openvpn/ccd/client3
+	staticip $SSV_OPENVPN_SERVER_CL4_ALLOW 5 >/etc/openvpn/ccd/client4
+	staticip $SSV_OPENVPN_SERVER_CL5_ALLOW 6 >/etc/openvpn/ccd/client5
+	staticip $SSV_OPENVPN_SERVER_CL6_ALLOW 7 >/etc/openvpn/ccd/client6
+	staticip $SSV_OPENVPN_SERVER_CL7_ALLOW 8 >/etc/openvpn/ccd/client7
+	staticip $SSV_OPENVPN_SERVER_CL8_ALLOW 9 >/etc/openvpn/ccd/client8
+}
+
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    restart)
+	stop
+	configure
+	sleep 1
+	start
+	sleep 1
+	;;
+    configure)
+	configure
+	;;
+    notify)
+	notify
+	;;
+    sharedinfo)
+	sharedinfo $2
+	;;
+    sharedkey)
+	sharedkey
+	;;
+    serverkeys)
+	serverkeys
+	;;
+    clientkeys)
+	clientkeys $2
+	;;
+    clientinfo)
+	clientinfo $2
+	;;
+    cclientinfo)
+	cclientinfo $2
+	;;
+    serverinfo)
+	serverinfo $2
+	;;
+    *)
+	echo "Usage: $0 {start|stop|restart|configure|sharedkey|sharedinfo|serverkeys|clientkeys|clientinfo|cclientinfo|serverinfo}"
+	exit 1
+esac
+
+exit 0

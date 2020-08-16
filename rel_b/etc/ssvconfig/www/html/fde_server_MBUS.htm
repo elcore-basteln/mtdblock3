@@ -1,0 +1,201 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+<script language="JavaScript" src="../js/wui.functions.js"></script>
+<script language="JavaScript" src="../js/json2.js"></script>
+<script language="JavaScript"><!--//
+var jobj = parent.jobj;
+var d = parent.sel_device;
+var c = parent.sel_channel;
+var r = parent.sel_driver;
+var view = parent.view;
+var scan = false;
+
+function set(){
+    switch(view){
+    case 'device':
+        if(document.getElementById("id_MBUSd15").value == '') {
+            alert("Not all fields are filled!");
+            return;
+        }
+        var a = '';
+        a += document.getElementById("id_MBUSd10").value;
+        a += ":"+document.getElementById("id_MBUSd21").value;
+        a += ":"+document.getElementById("id_MBUSd22").value;
+        a += ":"+document.getElementById("id_MBUSd13").value;
+        if (d<0) { //add
+            var device = new Object();
+            device.name=document.getElementById("id_MBUSd15").value;
+            device.driver=r.toString();
+            device.addr=a;
+            device.info=document.getElementById("id_MBUSd16").value;
+            device.channel = new Array();
+            jobj.data.device.push(device);
+        } else { //edit
+            jobj.data.device[d].addr = a;
+            jobj.data.device[d].name = document.getElementById("id_MBUSd15").value;
+            jobj.data.device[d].info = document.getElementById("id_MBUSd16").value;
+        }
+        parent.device_show();
+        break;
+    case 'channel':
+        if(document.getElementById("id_COMMONc1").value == '' || document.getElementById("id_COMMONc4").value == '' || document.getElementById("id_MBUSc1").value == '') {
+            alert("Not all fields are filled!");
+            return;
+        }
+        var channel = new Object();
+        channel.name=document.getElementById("id_COMMONc1").value;
+        channel.info=document.getElementById("id_COMMONc2").value;
+        channel.unit=document.getElementById("id_COMMONc3").value;
+        channel.step=document.getElementById("id_COMMONc4").value;
+        channel.src = document.getElementById("id_MBUSc1").value+" "+document.getElementById("id_MBUSc2").value;
+        channel.dst='-';
+        if (c<0) {//add
+            jobj.data.device[d].channel.push(channel);
+        } else { //edit
+            jobj.data.device[d].channel[c] = channel;
+        }
+        parent.channel_show();
+        break;
+    case 'scan':
+        break;
+    }
+    parent.wui.draw.boxClose();
+}
+function scann(){
+    if (document.getElementById("id_MBUSs10").value == "" || document.getElementById("id_MBUSs10").value == "") {
+        alert("Not all fields are filled!");
+        return;
+    }
+    var j = new Object();
+    var a = jobj.data.device[d].addr.split(":");
+    j.data = new Object();
+    j.data.driver = jobj.data.device[d].driver;
+    j.data.config = a[0]+":"+a[1]+":"+a[2];
+    j.data.start = document.getElementById("id_MBUSs10").value;
+    j.data.end = document.getElementById("id_MBUSs11").value;
+    var jo = wui.ajax.dataGet("/cgi-bin/fde_server.cgi?"+parent.sid+"&action=do.scan", JSON.stringify(j));
+    wui.draw.boxWait('Scanning 0%');
+    window.setTimeout("status()", 2000);
+}
+function status(){
+    var jo = wui.ajax.dataGet("/cgi-bin/fde_server.cgi?"+parent.sid+"&action=get.status", JSON.stringify({data:{driver:r.toString()}}));
+    wui.draw.boxClose();
+    if (jo.data.status == "scanning") {
+        wui.draw.boxWait('Scanning '+jo.data.info+'%');
+        window.setTimeout("status()", 2000);
+    } else {
+        list();
+    }
+}
+function list(){
+    var s='';
+    var a = jobj.data.device[d].addr.split(":");
+    var name = a[0]+":"+a[1]+":"+a[2];
+    var addr = a[3];
+    scan = wui.ajax.dataGet("/cgi-bin/fde_server.cgi?"+parent.sid+"&action=get.scan", JSON.stringify({data:{driver:r.toString()}}));
+    //alert(JSON.stringify(scan));
+    if (!scan.data[name]) return;
+    switch(view){
+    case 'device':
+        var tab = scan.data[name];
+        for(var i in tab){
+            s+='<input type="button" style="width:280px;text-align:left;" class="bm1" value="ID'+tab[i].id+', '+tab[i].vendor+', SN:'+tab[i].sn+'" onclick="set_src('+tab[i].id+')">';
+        }
+        wui.draw.boxOpen(3,"Available devices",s,300);
+        break;
+    case 'channel':
+        for(var i in scan.data[name]){
+            if(scan.data[name][i].id == addr) {
+                var tab = scan.data[name][i].channel;
+                for(var i in tab)
+                    s+='<input type="button" style="width:180px;text-align:left;" class="bm1" value="CH'+tab[i].id+', '+tab[i].name+' ['+tab[i].unit+']" onclick="set_src('+tab[i].id+',\''+tab[i].unit+'\')">';
+                wui.draw.boxOpen(3,"Available channels",s,200);
+                return;
+            }
+        }
+        break;
+    case 'scan':
+        document.getElementById("id_MBUSs12").innerHTML = scan.data[name].length;
+        break;
+    }
+}
+function set_src(i,u){
+    wui.draw.boxClose();
+    switch(view){
+    case 'device':
+        wui.element.set("id_MBUSd13", i);
+        break;
+    case 'channel':
+        wui.element.set("id_COMMONc3", u);
+        wui.element.set("id_MBUSc1", i);
+        break;
+    }
+}
+function init(){
+    document.getElementById(view).style.display="";
+    switch(view){
+    case 'device':
+        if(d<0) return;
+        var a = jobj.data.device[d].addr.split(":");
+        wui.element.set("id_MBUSd10", a[0]);
+        wui.element.set("id_MBUSd21", a[1]);
+        wui.element.set("id_MBUSd22", a[2]);
+        if(a[3])
+            wui.element.set("id_MBUSd13", a[3]);
+        else
+            wui.element.set("id_MBUSd13", "1");
+        document.getElementById("id_MBUSd15").value = jobj.data.device[d].name;
+        document.getElementById("id_MBUSd16").value = jobj.data.device[d].info;
+        break;
+    case 'channel':
+        if(c<0) return;
+        wui.element.set("id_COMMONc1", jobj.data.device[d].channel[c].name);
+        wui.element.set("id_COMMONc2", jobj.data.device[d].channel[c].info);
+        wui.element.set("id_COMMONc3", jobj.data.device[d].channel[c].unit);
+        wui.element.set("id_COMMONc4", jobj.data.device[d].channel[c].step);
+        var a = jobj.data.device[d].channel[c].src.split(" ");
+        var s='';
+        for(var i=1; i<a.length;i++) s+=" "+a[i];
+        document.getElementById("id_MBUSc1").value = a[0];
+        document.getElementById("id_MBUSc2").value = s;
+        break;
+    case 'scan':
+        break;
+    }
+}
+
+//--></script>
+<body onload="init();" bgcolor="#DDDDDD">
+
+<table style="display:none" id="device" class="t2" width="100%">
+<tr><td width="150">Device Name:</td><td><input type="text" class="text" id="id_MBUSd15" maxlength="15" size="20"></td>
+<tr><td>Description:</td><td><input type="text" class="text" id="id_MBUSd16" maxlength="63" size="50"></td>
+<tr><td>Device:</td><td><select size="1" id="id_MBUSd10"><option value="ttyAT0">COM1</option><option value="ttyAT1">COM2</option></select></td></tr>
+<tr><td>Baud rate:</td><td><select id="id_MBUSd21" size="1"><option value="2400">2400</option><option value="9600">9600</option><option value="19200">19200</option><option value="38400">38400</option></select></td></tr>
+<tr><td>Databits, Parity, Stopbits:</td><td><select id="id_MBUSd22" size="1"><option value="8E1">8E1</option></td></tr>
+<tr><td>Device ID:</td><td><input id="id_MBUSd13" type="text" class="text" maxlength="3" size="3"><input type="button" class="br1" value="Search" onclick="list()"></td></tr>
+</table>
+
+<table style="display:none" id="channel" class="t2" width="100%">
+<tr><td width="150">Name:</td><td><input id="id_COMMONc1" type="text" class="text" maxlength="15" size="20"></td></tr>
+<tr><td>Description:</td><td><input id="id_COMMONc2" type="text" class="text" maxlength="63" size="50"></td></tr>
+<tr><td>Unit:</td><td><input id="id_COMMONc3" type="text" class="text" maxlength="7" size="8"></td></tr>
+<tr><td>Read step:</td><td><input id="id_COMMONc4" type="text" class="text" maxlength="3" size="8"></td></tr>
+<tr><td colspan="2"><br></td></tr>
+<tr><td>Channel ID:</td><td><input id="id_MBUSc1" type="text" class="text" maxlength="5" size="8"><input type="button" class="br1" value="Search" onclick="list()"></td></tr>
+<tr><td>Calc expr.:</td><td><input id="id_MBUSc2" type="text" class="text" maxlength="64" size="50"></td></tr>
+</table>
+
+<table style="display:none" id="scan" class="t2" width="100%">
+<tr><td width="150">Start ID:</td><td><input id="id_MBUSs10" type="text" class="text" maxlength="3" size="3"></td></tr>
+<tr><td>End ID:</td><td><input id="id_MBUSs11" type="text" class="text" maxlength="3" size="3"></td></tr>
+<tr><td>Search:</td><td><input type="button" class="br1" value="Scan" onclick="scann()"></td></tr>
+<tr><td>Found devices:</td><td id="id_MBUSs12">-</td></tr>
+</table>
+
+<input style="margin:20px 10px 0px 0px;" type="button" class="br1" value="OK" onclick="set()">
+<input style="margin:20px 10px 0px 0px;" type="button" class="br1" value="Abort" onclick="parent.wui.draw.boxClose()">
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>{$page.name$}</title>
+<link rel="icon" type="image/ico" href="../css/images/favicon.ico">
+<link rel="shortcut icon" href="../css/images/favicon.ico">
+<link rel="stylesheet" href="../css/jquery.mobile.min.css" />
+<link rel="stylesheet" href="../css/user.css" />
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/wui.functions.js"></script>
+<script type="text/javascript" src="../js/jquery.mobile.min.js"></script>
+</head>
+<body>
+
+<div data-role="page" data-theme="c">
+	
+    <div data-role="header" data-theme="a" class="wui-header">
+        <img src="../css/images/logo_mobil.png" />
+        <div class="ui-grid-b">
+        <div class="ui-block-a"><a data-role="none" href="#"></a></div>
+        <div class="ui-block-b"><a data-role="none" href="#"></a></div>
+        <div class="ui-block-c"><a data-role="none" href="#language">{$language$}&nbsp;<img src="../css/images/{#lang#}.png" class="ui-li-icon"></a></div>
+        </div>
+    </div>
+
+    <div data-role="content">
+        <h3>{$access.login$}</h3>
+	<form action="access.cgi?{#sid#}&action=login" method="post" data-ajax="false">
+        <ul data-role="listview" data-inset="true" data-theme="a">
+        <li id="login">
+        <label for="user">{$access.username$}</label>
+        <input type="text" name="user" id="user" value="" />
+        <label for="pass">{$access.password$}</label>
+        <input type="password" name="pass" id="pass" value="" />
+        <button type="submit" data-theme="b" name="submit">{$access.enter$}</button>
+        </li>
+        </ul>
+        </form>
+        <div style="font-size:12px;color:red;width:100%;text-align:center;"><strong>{#response#}</strong></div>
+    </div>
+    
+    <div data-role="footer" data-position="fixed" data-theme="b" class="wui-footer">
+        <div class="ui-grid-b">
+        <div class="ui-block-a"><a data-role="none" href="#"></a></div>
+        <div class="ui-block-b"><a data-role="none" href="#">&nbsp;</a></div>
+        <div class="ui-block-c"><a data-role="none" href="#"></a></div>
+        </div>
+    </div>
+</div>
+
+<div data-role="dialog" id="language">
+    <h3 style="margin-left:10px;">{$language$}</h3>
+    <ul data-role="listview" data-inset="true" style="width:95%;margin:auto" data-theme="a">
+        <li><a href="#" onclick="wui.set_lang('{#sid#}','de')"><img src="../css/images/de.png" class="ui-li-icon">{$language.de$}</a></li>
+        <li><a href="#" onclick="wui.set_lang('{#sid#}','gb')"><img src="../css/images/gb.png" class="ui-li-icon">{$language.gb$}</a></li>
+	<li data-theme="b"><a data-rel="back" href="#">{$action.back$}</a></li>
+    </ul>
+</div>
+
+</body>
+</html>

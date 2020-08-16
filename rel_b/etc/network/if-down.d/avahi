@@ -1,0 +1,6 @@
+#!/bin/sh
+
+if [ $IFACE = "eth0" ]; then
+    /etc/ssvconfig/init.d/avahi-autoipd stop >/dev/null
+fi
+exit 0

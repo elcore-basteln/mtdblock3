@@ -1,0 +1,74 @@
+# Package generated configuration file
+# See the sshd(8) manpage for details
+
+# What ports, IPs and protocols we listen for
+Port 22
+#Protocol 1
+#HostKey /etc/ssh/ssh_host_key
+#Protocol 2
+#ListenAddress ::
+#ListenAddress 0.0.0.0
+# HostKeys for protocol version 2
+#HostKey /etc/ssh/ssh_host_rsa_key
+#HostKey /etc/ssh/ssh_host_dsa_key
+# Privilege Separation is turned on for security
+#UsePrivilegeSeparation yes
+
+# Lifetime and size of ephemeral version 1 server key
+KeyRegenerationInterval 3600
+#ServerKeyBits 768
+
+# Logging
+#SyslogFacility AUTH
+#LogLevel QUIET
+
+# Authentication:
+#LoginGraceTime 600
+PermitRootLogin yes
+#StrictModes yes
+
+#RSAAuthentication yes
+#PubkeyAuthentication yes
+#AuthorizedKeysFile	%h/.ssh/authorized_keys
+
+# For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
+#IgnoreRhosts yes
+# For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
+#RhostsRSAAuthentication no
+# similar for protocol version 2
+#HostbasedAuthentication no
+# Uncomment if you don't trust ~/.ssh/known_hosts for RhostsRSAAuthentication
+#IgnoreUserKnownHosts yes
+
+# To enable empty passwords, change to yes (NOT RECOMMENDED)
+PermitEmptyPasswords yes
+
+# Change to no to disable s/key passwords
+#ChallengeResponseAuthentication yes
+
+# Change to yes to enable tunnelled clear text passwords
+#PasswordAuthentication no
+
+
+# To change Kerberos options
+#KerberosAuthentication no
+#KerberosOrLocalPasswd yes
+#AFSTokenPassing no
+#KerberosTicketCleanup no
+
+# Kerberos TGT Passing does only work with the AFS kaserver
+#KerberosTgtPassing yes
+
+#X11Forwarding no
+#X11DisplayOffset 10
+#PrintMotd no
+#PrintLastLog yes
+#KeepAlive yes
+#UseLogin no
+
+#MaxStartups 10:30:60
+#Banner /etc/issue.net
+
+#Subsystem	sftp	/usr/local/sbin/sftp-server
+
+#UsePAM yes

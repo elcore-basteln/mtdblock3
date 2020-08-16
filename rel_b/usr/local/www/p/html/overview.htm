@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../css/root.css" media="all">
+<link rel="icon" type="image/x-icon" href="../css/images/favicon.ico">
+<link rel="shortcut icon" type="image/x-icon" href="../css/images/favicon.ico">
+
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/wui.functions.js"></script>
+<script type="text/javascript">
+var url="fde_data.cgi?{#sid#}&action=get";
+var jds = new Array();
+jds.d = new Object();
+jds.f = new Object();
+function subscribe(id,v,f) {
+	if (!id || id == "") return;    /* exit if parameter empty */
+	jds.d[id] = v;
+	if(f) jds.f[id] = f;
+}
+function update(f, t){
+    $.get(url, f);
+    return setInterval(function(){$.get(url, f);}, t);
+}
+function init(){
+    update(ajax_cb, 5000);
+}
+function ajax_cb(r) {
+	var o=eval('('+r+')');
+	for (var v in jds.d) {
+		switch(typeof jds.f[v]) {
+		case "function": jds.f[v](o.data[jds.d[v]]); break;
+		case "number": document.getElementById(v).innerHTML = parseFloat(o.data[jds.d[v]]).toFixed(jds.f[v]-1); break;
+		default: document.getElementById(v).innerHTML = o.data[jds.d[v]]; break;
+		}
+	}
+}
+</script>
+<title>{$page.name$}</title>
+</head>
+<body onload="init();">
+<div id="page">
+    <div id="header">
+        <h1><a href="http://www.elcore2400.com"><img src="../css/images/logo.png" /></a></h1>
+    </div>
+    <div id="navigation-top">
+        <ul>
+            <li class="first"><a href="webgui.cgi?{#sid#}&html=overview">{$menu.plant$}</a></li>
+            <li>&nbsp;</li>
+            <li><a href="userconf.cgi?{#sid#}">{$menu.userconf$}</a></li>
+            <li class="last" onmouseout="$('#navigation-top-sub').hide()" onmouseover="$('#navigation-top-sub').show()">
+                <a href="#">{$language$}&nbsp;<img src="../css/images/{#lang#}.png"></a>
+                <div id="navigation-top-sub" class="navigation-top-sub" style="display:none;">
+                <a href="#" onclick="wui.set_lang('{#sid#}','de')"><img src="../css/images/de.png">{$language.de$}</a>
+                <a href="#" onclick="wui.set_lang('{#sid#}','gb')"><img src="../css/images/gb.png">{$language.gb$}</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div id="header-image">
+        <img src="../css/images/header-startpage.jpg" />
+    </div>
+    <div id="page-inner">
+        <div id="navigation-left">
+            <ul>
+                <li class="first"><a href="webgui.cgi?{#sid#}&html=overview"><u>{$menu.overview$}</u></a></li>
+		<!--<li><a href="webgui.cgi?{#sid#}&html=archive">{$menu.archive$}</a></li>-->
+		<li><a href="webgui.cgi?{#sid#}&html=messages">{$menu.messages$}</a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=parameter">{$menu.config$}</a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=data">{$menu.data$}</a></li>
+            </ul>
+        </div>
+        <div id="content">
+            <h1>{$menu.overview$}</h1>
+            <h4>{$menu.plant$} {#serial#}</h4>
+            <ul id="overview">
+                <li>
+                    <img src="../css/images/sym_voltage.png" />
+                    <span class="ui-text" >{$elc.P_Elektrisch$}</span><span class="ui-value" id="P_Elektrisch">---</span><span class="ui-unit">W</span><br />
+		    <span class="ui-text" >{$elc.E_Elektrisch_ge$}</span><span class="ui-value" id="E_Elektrisch_ge">---</span><span class="ui-unit">kWh</span><br />
+                    <script type="text/javascript">
+                        subscribe('P_Elektrisch','elc.P_Elektrisch',1);
+			subscribe('E_Elektrisch_ge','elc.E_Elektrisch_ge',1);
+                    </script>
+                </li>
+                <li>
+                    <img src="../css/images/sym_heat.png" />
+                    <span class="ui-text">{$elc.P_Thermisch$}</span><span class="ui-value" id="P_Thermisch" class="us-text">---</span><span class="ui-unit">W</span><br />
+		    <span class="ui-text">{$elc.E_Thermisch_ges$}</span><span class="ui-value" id="E_Thermisch_ges" class="us-text">---</span><span class="ui-unit">kWh</span><br />
+                    <script type="text/javascript">
+                        subscribe('P_Thermisch','elc.P_Thermisch',1);
+			subscribe('E_Thermisch_ges','elc.E_Thermisch_ges',1);
+                    </script>
+                </li>
+                <li style="height:75px">
+                    <img src="../css/images/sym_temperatur.png" />
+                    <span class="ui-text">{$elc.TVorlauf$}</span><span class="ui-value" id="TVorlauf" class="us-text">---</span><span class="ui-unit">°C</span><br />
+		    <span class="ui-text">{$elc.TRuecklauf$}</span><span class="ui-value" id="TRuecklauf" class="us-text">---</span><span class="ui-unit">°C</span><br />
+		    <span class="ui-text">{$elc.TSpeicher$}</span><span class="ui-value" id="TSpeicher" class="us-text">---</span><span class="ui-unit">°C</span><br />
+                    <script type="text/javascript">
+                        subscribe('TVorlauf','elc.TVorlauf',3);
+                        subscribe('TRuecklauf','elc.TRuecklauf',3);
+			subscribe('TSpeicher','elc.TSpeicher',3);
+                    </script>
+                </li>
+		<li>
+                    <img src="../css/images/sym_op.png" />
+                    <span class="ui-text">{$elc.Betr_h_akt$}</span><span class="ui-value" id="Betr_h_akt">---</span><span class="ui-unit">h</span><br />
+                    <span class="ui-text">{$elc.Betr_h_ges$}</span><span class="ui-value" id="Betr_h_ges">---</span><span class="ui-unit">h</span><br />
+		    <script type="text/javascript">
+                        subscribe('Betr_h_akt','elc.Betr_h_akt',1);
+			subscribe('Betr_h_ges','elc.Betr_h_ges',1);
+                    </script>
+                </li>
+		<li>
+                    <img src="../css/images/sym_co2.png" />
+                    <br />
+		    <span class="ui-text">{$elc.CO2_einsparung$}</span><span class="ui-value" id="CO2_einsparung" >---</span><span class="ui-unit">kg</span><br />
+		    <script type="text/javascript">
+                        subscribe('CO2_einsparung','elc.CO2_einsparung',3);
+                    </script>
+                </li>
+            </ul>
+        </div>
+        
+        <div id="ticker">
+            <h2>{$overview.status$}</h2>
+	    <ul>
+                <li id="status">
+                    <h5>{$overview.status$}</h5>
+                    <span id="VS1">---</span><br>
+		    <h5>{$overview.error$}</h5>
+                    <span id="VS2">---</span><br>
+		    <h5>{$overview.care$}</h5>
+                    <span id="VS3">---</span><br>
+                    <script type="text/javascript">
+                        subscribe('VS1', 'elc.Systemstatus', function(v){
+				switch(v){
+				case "0": $("#VS1").html("{$status.down$}"); $("#VS1").css('background-color', '#FF0000'); break;
+				case "1": $("#VS1").html("{$status.run$}"); $("#VS1").css('background-color', '#00FF00'); break;
+				}});
+			subscribe('VS2', 'elc.Fehlerstatus', function(v){
+				switch(v){
+				case "0": $("#VS2").html("{$error.no$}"); $("#VS2").css('background-color', '#00FF00'); break;
+				case "1": $("#VS2").html("{$error.warning$}"); $("#VS2").css('background-color', '#FFFF00'); break;
+				case "2":  $("#VS2").html("{$error.error$}"); $("#VS2").css('background-color', '#FF0000'); break;
+				case "3":  $("#VS2").html("{$error.alert$}"); $("#VS2").css('background-color', '#FF0000'); break;
+				}});
+			subscribe('VS3', 'elc.Wartungsbedarf', function(v){
+				switch(v){
+				case "0": $("#VS3").html("{$care.no$}"); $("#VS3").css('background-color', '#00FF00'); break;
+				case "1": $("#VS3").html("{$care.yes$}"); $("#VS3").css('background-color', '#FFFF00'); break;
+				}});
+                    </script>
+                </li>    
+            </ul>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div id="footer">
+        <ul>
+            <li class="first"><a href="access.cgi?{#sid#}&action=logout">{$menu.logout$}</a></li>
+            <li><a href="#"></a></li>
+            <li><a href="#"></a></li>
+            <li class="last"><a href="#"></a></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

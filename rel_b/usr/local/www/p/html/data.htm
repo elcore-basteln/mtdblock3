@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../css/root.css" media="all">
+<link rel="icon" type="image/x-icon" href="../css/images/favicon.ico">
+<link rel="shortcut icon" type="image/x-icon" href="../css/images/favicon.ico">
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/wui.functions.js"></script>
+<script type="text/javascript">
+var url="fde_data.cgi?{#sid#}&action=get";
+var jds = new Array();
+jds.d = new Object();
+jds.f = new Object();
+function subscribe(id,v,f) {
+	if (!id || id == "") return;    /* exit if parameter empty */
+	jds.d[id] = v;
+	if(f) jds.f[id] = f;
+}
+function init(){
+    $.get(url, ajax_cb);
+}
+function ajax_cb(r) {
+	var o=eval('('+r+')');
+	for (var v in jds.d) {
+		switch(typeof jds.f[v]) {
+		case "function": jds.f[v](o.data[jds.d[v]]); break;
+		case "number": document.getElementById(v).innerHTML = parseFloat(o.data[jds.d[v]]).toFixed(jds.f[v]-1); break;
+		default: document.getElementById(v).innerHTML = o.data[jds.d[v]]; break;
+		}
+	}
+}
+</script>
+<title>{$page.name$}</title>
+</head>
+<body onload="init();">
+<div id="page">
+    <div id="header">
+        <h1><a href="http://www.elcore2400.com"><img src="../css/images/logo.png" /></a></h1>
+    </div>
+    <div id="navigation-top">
+        <ul>
+            <li class="first"><a href="webgui.cgi?{#sid#}&html=overview">{$menu.plant$}</a></li>
+            <li>&nbsp;</li>
+            <li><a href="userconf.cgi?{#sid#}">{$menu.userconf$}</a></li>
+            <li class="last" onmouseout="$('#navigation-top-sub').hide()" onmouseover="$('#navigation-top-sub').show()">
+                <a href="#">{$language$}&nbsp;<img src="../css/images/{#lang#}.png"></a>
+                <div id="navigation-top-sub" class="navigation-top-sub" style="display:none;">
+                <a href="#" onclick="wui.set_lang('{#sid#}','de')"><img src="../css/images/de.png">{$language.de$}</a>
+                <a href="#" onclick="wui.set_lang('{#sid#}','gb')"><img src="../css/images/gb.png">{$language.gb$}</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div id="header-image">
+        <img src="../css/images/header-startpage.jpg" />
+    </div>
+    <div id="page-inner">
+        <div id="navigation-left">
+            <ul>
+		<li class="first"><a href="webgui.cgi?{#sid#}&html=overview">{$menu.overview$}</a></li>
+		<!--<li><a href="webgui.cgi?{#sid#}&html=archive">{$menu.archive$}</a></li>-->
+		<li><a href="webgui.cgi?{#sid#}&html=messages">{$menu.messages$}</a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=parameter">{$menu.config$}</a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=data"><u>{$menu.data$}</u></a></li>
+            </ul>
+        </div>
+        <div id="content" style="padding-top:0px;">
+            <h1>{$menu.data$}</h1>
+	    <h4>{$menu.plant$} {#serial#}</h4>
+	    
+            <h3>{$data.info$}</h3>
+	    <table class="contenttable"><tbody>
+	    <tr><td>{$elc.SerienNr$}</td><td id="V1">---</td></tr>
+	    <tr><td>{$elc.V_Hauptplatine$}</td><td id="V2">---</td></tr>
+	    <tr><td>{$elc.V_EWR$}</td><td id="V3">---</td></tr>
+	    <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+            {$data.t1$}
+            {$data.t2$}
+            {$data.t3$}
+            {$data.t4$}
+            {$data.t5$}
+            {$data.t6$}
+            {$data.t7$}
+            {$data.t8$}
+            {$data.t9$}
+	    </tbody></table>
+	    <script type="text/javascript"> 
+		subscribe('V1','elc.SerienNr');
+		subscribe('V2','elc.V_Hauptplatine');
+		subscribe('V3','elc.V_EWR');
+	    </script>
+        </div>
+        
+        <div id="ticker">
+		<h2>{$data.contact$}</h2>
+		<ul><li id="V4"></li></ul>
+		<script type="text/javascript">
+                    subscribe('V4','elc.Kontakt',function(v){$('#V4').html(v.replace(/  /g, '<br>'));});
+                </script>
+		<h2>{$data.help$}</h2>
+		<ul>
+                <li>{$data.manuals$}</li>
+		</ul>
+        </div>
+        
+        <div class="clear"></div>
+    </div>
+    <div id="footer">
+        <ul>
+            <li class="first"><a href="access.cgi?{#sid#}&action=logout">{$menu.logout$}</a></li>
+            <li><a href="#"></a></li>
+            <li><a href="#"></a></li>
+            <li class="last"><a href="#"></a></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

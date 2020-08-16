@@ -1,0 +1,82 @@
+#!/bin/sh
+
+# Status LED flashing and firewall rules from server
+
+. /etc/ssvconfig/bin/ssvfunction
+. /etc/ssvconfig/bin/ssvhardware
+
+#trap "led1_off; exit 0" SIGINT SIGTERM
+trap "ledstat 1 0; exit 0" SIGINT SIGTERM
+# Read firewall rules from server
+fwget()
+{
+	. /etc/ssvconfig/config/openvpn
+
+	if [ "$SSV_OPENVPN_FW_ON" = "on" ]; then
+		# Calc server IP from network and netmask of our self ip
+		SERVER=`calcip 1 $1 $2`
+
+		if [ -n "$SSV_OPENVPN_FW_URL" ]; then
+			URL="$SSV_OPENVPN_FW_URL"
+		elif [ -n "$SERVER" ]; then
+			URL="http://$SERVER/fwrules/"
+		else
+			logger -t fw-tap.rules "Error with calcip"
+			return
+		fi
+	
+		# Allow VPN-Server on TUN/TAP
+		iptables -A INPUT -i $SSV_OPENVPN_DEV+ -s $SERVER -j ACCEPT
+
+		rm -f /etc/fw-tap.rules
+		if wget -q -O /etc/fw-tap.rules $URL; then
+			if [ -s /etc/fw-tap.rules ]; then
+				if sh /etc/fw-tap.rules 2>/dev/null; then
+					logger -t fw-tap.rules "Installed $URL"
+				else
+					logger -t fw-tap.rules "Error installing"
+				fi
+			else
+				logger -t fw-tap.rules "Empty rules"
+			fi
+		else
+			logger -t fw-tap.rules "Wget failed $URL"
+		fi
+
+		# Add server self to remove later
+		echo "iptables -A INPUT -i $SSV_OPENVPN_DEV+ -s $SERVER -j ACCEPT" >>/etc/fw-tap.rules
+	fi
+}
+
+# Remove old Firewall rules
+fwrem()
+{
+	if [ -s /etc/fw-tap.rules ]; then
+		if sed -e 's/iptables -A /iptables -D /' </etc/fw-tap.rules | sh 2>/dev/null; then
+			logger -t fw-tap.rules "Removed"
+			rm /etc/fw-tap.rules
+		else
+			logger -t fw-tap.rules "Error on remove"
+		fi
+	fi
+}
+
+fwrem
+sleep 1
+while pidof openvpn 2>/dev/null
+do
+	#led1_on
+	sleep 1
+	set -- `cat $VPN_STATE_FILE 2>/dev/null`
+	if [ "x$1" = "xcomplete" ]
+	then
+		fwget $2 $3
+		exit 0
+	fi
+	#led1_off
+	sleep 4
+done
+
+#led1_off
+ledstat 1 0
+exit 0

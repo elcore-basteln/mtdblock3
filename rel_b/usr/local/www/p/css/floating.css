@@ -1,0 +1,54 @@
+@charset "utf-8";
+/* CSS Document */
+
+/**
+ * Floating
+ *
+ * Definition des Dokumentflusses
+ */
+
+/* Fluss links einrichten */
+.float-l{
+	float: left;
+}
+
+/* Fluss rechts einrichten */
+.float-r{
+	float: right;
+}
+
+/* Fließender Container links (mit Abstand) */
+.clip-l{
+	float: left;
+	margin: 0px 20px 10px 0px;
+}
+
+/* Fließender Container rechts (mit Abstand) */
+.clip-r{
+	float: right;
+	margin: 0px 0px 10px 20px;
+}
+
+
+/*easy clearing*/
+
+.clear:after{
+	content: ".";
+	display:block;
+	height:0;
+	clear: both;
+	visibility:hidden;
+}
+
+.clear {
+	min-height:0;
+}
+
+*html .clear {
+	height:1%;
+}
+
+/* IE-Patch für IE 7*/
+*:first-child+html .clearfix, *:first-child+html .clear { min-height: 0;
+clear: both;
+ } 

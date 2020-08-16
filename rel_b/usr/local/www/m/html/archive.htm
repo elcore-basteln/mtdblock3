@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Archive</title>
+
+<link rel="icon" type="image/ico" href="../favicon.ico">
+<link rel="shortcut icon" href="../favicon.ico">
+<link rel="stylesheet" href="../css/jquery.mobile.min.css" />
+<link rel="stylesheet" href="../css/user.css" />
+
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/wui.functions.js"></script>
+<script type="text/javascript" src="../js/jquery.mobile.min.js"></script>
+<script type="text/javascript">
+var pos=0;
+function update(p){
+    var width=$("#graph").width();
+    var height=$(window).height()-210;
+    if(height<=0) height=210;
+    draw(height,width);
+}
+function draw(h,w){
+    var frame=$("#select-choice-2").val();
+    var channel=$("#select-choice-1").val();
+    var comm="?h="+h+"&w="+w+"&f="+frame+"&p="+pos+"&c="+channel;
+    $("#graphpng").attr("src", "graph.php"+comm);
+}
+function init(){
+    width=$("#graph").width();
+    height=$(window).height()-210;
+    if(height<=0) height=210;
+    draw(height,width);
+}
+</script>
+</head>
+
+<body onload="init();">
+
+<div data-role="page" data-theme="a">
+
+    <div data-role="header" data-theme="a" class="wui-header">
+        <img src="../css/images/logo_mobil.png" />
+        <div class="ui-grid-b">
+        <div class="ui-block-a"><a data-role="none" href="webgui.cgi?{#sid#}&html=overview">{$menu.plant$}</a></div>
+        <div class="ui-block-b"><a data-role="none" href="#menu">{$menu.menu$}</a></div>
+        <div class="ui-block-c"><a data-role="none" href="#language">{$language$}&nbsp;<img src="../css/images/{#lang#}.png" class="ui-li-icon"></a></div>
+        </div>
+    </div>
+    <div id="archive" data-role="content" style="padding-top:0px;">	
+        <h3 style="margin-bottom:0px;">{$menu.archive$}</h3>
+	<div style="margin:5px 0px 5px 5px;font-size:12px;">{$page.anlage$} {#serial#}</div>
+        <select onchange="update();" data-theme="b" name="select-choice-1" id="select-choice-1" data-native-menu="false">
+            <option value="test.v_out">{$overview.voltage$}</option>
+            <option value="test.t_wather">{$overview.heat$}</option>
+            <option value="test.t_power">{$overview.t_power$}</option>
+            <option value="test.e_power">{$overview.e_power$}</option>
+        </select>
+        
+        <div id="graph" data-theme="a">
+            <img id="graphpng" src="" />
+        </div>
+        
+        <table style="width:100%;padding:0px;margin:0px">
+            <tr>
+            <td width="20%"><button onclick="update(pos++);" type="button" data-icon="arrow-l" data-theme="b">&nbsp;</button></td>
+            <td width="60%"> 
+                <select style="width:100%" onchange="update();" id="select-choice-2" data-theme="b" name="select-choice-2" data-native-menu="false">
+                    <option value="31536000">1 Jahr</option>
+                    <option value="2592000">1 Monat</option>
+                    <!--<option value="604800">1 Woche</option>-->
+                    <option value="86400" selected="selected">1 Tag</option>
+                    <!--<option value="21600">6 Stunden</option>-->
+                </select>
+            </td>
+            <td width="20%"><button onclick="update(pos--);" type="button" data-icon="arrow-r" data-iconpos="right" data-theme="b">&nbsp;</button></td>
+            </tr>
+        </table>
+    </div>
+
+    <div data-role="footer" data-position="fixed" data-theme="b" class="wui-footer">
+        <div class="ui-grid-b">
+        <div class="ui-block-a"><a data-role="none" href="access.cgi?action=logout">{$menu.logout$}</a></div>
+        <div class="ui-block-b"><a data-role="none" href="#"></a></div>
+        <div class="ui-block-c"><a data-role="none" href="#"></a></div>
+        </div>
+    </div>
+</div>
+
+<div data-role="dialog" id="language">
+    <h3 style="margin-left:10px;">{$language$}</h3>
+    <ul data-role="listview" data-inset="true" style="width:90%;margin:auto" data-theme="a">
+        <li><a href="#" onclick="wui.set_lang('{#sid#}','de')"><img src="../css/images/de.png" class="ui-li-icon">{$language.de$}</a></li>
+        <li><a href="#" onclick="wui.set_lang('{#sid#}','gb')"><img src="../css/images/gb.png" class="ui-li-icon">{$language.gb$}</a></li>
+    </ul>
+</div>
+<div data-role="dialog" id="menu">
+	<h3 style="margin-left:10px;">{$menu.menu$}</h3>
+	<ul data-role="listview" data-inset="true" style="width:90%;margin:auto" data-theme="a">
+		<li><a href="webgui.cgi?{#sid#}&html=overview">{$menu.overview$}</a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=archive">{$menu.archive$}</a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=messages">{$menu.messages$}</a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=parameter">{$menu.config$}</a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=data">{$menu.data$}</a></li>
+		<li><a href="userconf.cgi?{#sid#}">{$menu.userconf$}</a></li>
+	</ul>
+</div>
+</body>
+</html>

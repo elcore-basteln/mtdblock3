@@ -1,0 +1,279 @@
+@charset "utf-8";
+/* CSS Document */
+
+/**
+ * Layout
+ *
+ * Projektbezogene Regeln für das Seitenlayout
+ */
+
+/* Body */
+body{
+	background: #eeeeee url(images/body.png) repeat-y center;
+}
+
+/* Komplette Seite */
+
+#page {
+    position: relative;
+    width: 920px;
+    background: #ffffff;
+    min-height: 100%;
+    margin: 0 auto;
+}
+
+
+#header {
+    height: 100px;
+    line-height: 100px;
+    padding: 25px 0 0 45px;
+}
+
+#header a {
+    display: block;
+    height: 100%;
+}
+
+#page {
+    position: relative;
+    width: 920px;
+    background: #ffffff;
+    min-height: 100%;
+    margin: 0 auto;
+}
+
+#page-inner {
+    padding: 10px 25px 30px;
+}
+
+#header {
+    height: 82px;
+    line-height: 100px;
+    padding: 25px 0 0 45px;
+}
+
+#header a {
+    display: block;
+    height: 100%;
+}
+
+/*starpage header height
+#header-image {
+	height: 335px;
+}*/
+
+#content ul, ol{
+	background:url(images/content-pic-startpage.jpg) no-repeat top left;
+	height:300px;
+	padding: 21px 0 0 200px;
+}
+#content img {
+	margin-top: 0;
+}
+#content {
+    width: 520px;
+    float: left;
+	min-height:100px;
+	/*margin-right: 20px;*/
+	padding-bottom: 20px;
+}
+#content h3 {
+	margin-top:20px;
+}
+#content img {
+	margin-top:20px;
+}
+
+
+#content #overview {
+    background: none;
+    padding: 0px;
+    /*margin: 0px;*/
+    list-style-type:none;
+    width: 500px;
+}
+#content #overview li{
+    height:50px;
+    border-bottom: 1px solid #D5D5D5;
+    margin-bottom: 6px;
+    width: 460px;
+}
+#content #overview span {
+    height:20px;
+    float:left;
+    padding:2px;
+    font-weight: bold;
+}
+#content #overview img {
+    float:left;
+    width:50px;
+    height:50px;
+    padding:0px;
+    margin:0px;
+}
+#content #overview .ui-text{
+    width:270px;
+    color:#575757;
+}
+#content #overview .ui-value{
+    width:80px;
+    text-align: right;
+    color:#BD0926;
+}
+#content #overview .ui-unit{
+    width:40px;
+    color:#575757;
+}
+#content #overview .ui-bar {
+	background: url(images/balken_hg_start.png) 0px 0px no-repeat;
+    width: 150px;
+	height: 12px;
+	overflow:hidden;
+	display: block;
+    margin: 8px 0px 0px 8px;
+    padding: 0px;
+}
+#content #overview .ui-bar div{
+	background: url(images/balken_start.png) 0px 0px no-repeat;
+	width: 0px;
+	height: 12px;
+    margin:0px;
+    padding:0px;
+}
+
+.errortable td{
+	border-bottom: 1px #999 solid;
+}
+.errortable td:last-child, .errortable th:last-child{
+	text-align:center;
+	width:80px;
+}
+.error, .warning {
+	/*display:none;*/
+}
+.error td:first-child{
+    background-image: url("images/icon_error.png");
+}
+.warning td:first-child{
+    background-image: url("images/icon_warning.png");
+}
+
+#status span{
+	font-weight:bold;
+	width:152px;
+	display:block;
+	text-align:center;
+}
+
+#ticker {
+    width: 180px;
+    float: left;
+}
+
+#ticker h2 {
+    color: rgb(189, 9, 38);
+    font-size: 1.2em;
+    margin: 0px 0px 10px;
+}
+
+#ticker h3 {
+    font-weight: normal;
+	margin-bottom: 10px;
+}
+
+#ticker h4 {
+    font-size: 1em;
+}
+
+#ticker ul {
+    padding: 0;
+    list-style-type: none;
+}
+
+#ticker ul li {
+    background: #ebeced;
+    margin-bottom: 10px;
+    font-size: 15px;
+	padding:  3px 3px 0px 13px;
+	border-bottom: 1px #999 solid;
+}
+
+#ticker p {
+	margin-top: 0;
+	font-size:12px;
+}
+
+#footer {
+    position: absolute;
+    bottom: 0;
+    display: table;
+    width: 100%;
+    color: #ffffff;
+    background: #575757;
+    height: 1.75em;
+    line-height: 1.75em;
+    font-size: 0.93em;
+}
+
+#footer ul {
+    display: table-row;
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+#footer ul li {
+    display: table-cell;
+    text-align: center;
+    width: 20%;
+}
+
+/* IE7 */
+*+html #footer ul li {
+    min-width: 100px;
+    display: inline-block;
+    float: left;
+}
+
+#footer a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+#footer a:hover {
+    text-decoration: underline;
+}
+
+
+
+/* Sitemap */
+
+div.csc-sitemap 	ul li{
+	font-weight:bold;
+	margin-top: 10px;
+	/*background:#C3C3C3;*/ /*alternative Hintergrundfarbe für IE*/
+	
+/*	background-image: -webkit-gradient(
+    linear,
+    right bottom,
+    left bottom,
+    color-stop(0.18, rgb(195,195,195)),
+    color-stop(0.66, rgb(245,245,245))
+);
+background-image: -moz-linear-gradient(
+    right center,
+    rgb(195,195,195) 18%,
+    rgb(245,245,245) 66%
+);*/
+
+	
+	
+}
+
+div.csc-sitemap 	ul li ul li{
+	font-weight:normal;
+}
+
+div.csc-sitemap 	ul li ul{
+	margin: 10px 0px 0px 0px;
+}

@@ -1,0 +1,48 @@
+#!/bin/sh
+#
+# global settings
+
+THIS="/etc/ssvconfig/bin/udhcpc.helper.bound"
+PID_FILE="/var/run/udhcpc.helper.pid"
+LOCK_FILE="/var/lock/udhcpc.helper.bound.lock"
+NETWORK_STARTED="/var/cache/network-started"
+
+[ -f ${LOCK_FILE} ] && exit 0
+
+[ "x$1" != "xJOB" ] && {
+# set current state
+    echo "up" > ${NETWORK_STARTED}-Up
+    mv ${NETWORK_STARTED}-Up ${NETWORK_STARTED}
+
+# restart at background
+    sh $THIS JOB &
+    exit 0
+}
+# redirect STDOUT, STDERR
+exec 1>/dev/null
+exec 2>/dev/null
+
+#remove pid file on exit
+trap signal_handler SIGTERM
+signal_handler()
+{
+    rm -f ${PID_FILE}.$$ ${LOCK_FILE}
+    exit 0
+}
+
+# lock udhcpc.helper.bound
+: > ${LOCK_FILE}
+
+#save PID file
+echo $$ > ${PID_FILE}.$$
+
+#test for network cable
+filestat -,250 loopeq /sys/class/net/eth0/operstate ${NETWORK_STARTED}
+
+#remove our pid file
+rm -f ${PID_FILE}.$$ ${LOCK_FILE}
+
+#trigger udhcpc daemon
+[ -f /var/run/udhcpc.eth0.pid ] && kill -USR1 $(cat /var/run/udhcpc.eth0.pid)
+
+exit 0

@@ -1,0 +1,87 @@
+<html>
+<head>
+<title>menue</title>
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+<script language="JavaScript" src="../js/wui.menu.js"></script>
+</head>
+<body bgcolor="#000064" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<table border="0" cellpadding="0" cellspacing="0" width="190" height="100%">
+<tr>
+<td class="menu" height="77" colspan="2" background="/images/menu1.gif"><p>&nbsp;</p></td>
+</tr>
+
+<script language="JavaScript">
+var untermenucount=0;
+
+
+for(var i=0;i<menus.length;i++){
+	var eintrag;
+	if(menus[i].charAt(0)!='-'){ //hauptmenu
+		eintrag=menus[i].split(":");
+		hauptmenu(eintrag[0],eintrag[1],untermenucount);
+	}else{// untermenu
+		untermenukopf(untermenucount);
+		for(i;i<menus.length && menus[i].charAt(0)=='-';i++){
+			eintrag=menus[i].replace(/-/, "").split(":");
+			untermenulink(eintrag[0],eintrag[1]);
+		}
+		untermenufuss();
+		untermenucount++;
+		i--;
+	}
+}
+var menu_current="status.cgi";
+
+function hauptmenu(name,link,count){
+	document.writeln('<tr height="24"><td class="menu" width="25" background="/images/menu3.gif"><p>&nbsp;</p></td>');
+	if(link=="#"){
+		document.writeln('<td class="menu" width="165" background="/images/menu4.gif"><p align="left"><a href="#" onclick="menu('+count+');">'+name+'</a></p></td>');
+	}else{
+		document.writeln('<td class="menu" width="165" background="/images/menu4.gif"><p align="left"><a href="#" id="'+link+'" onclick=frameladen(this.id)>'+name+'</a></p></td>');
+	}
+	document.writeln('</tr>');
+}
+function untermenukopf(count){
+	document.writeln('<tr height="24" id="cel'+count+'">');
+	document.writeln('<td class="menu" width="25" background="/images/menu2.gif"><p>&nbsp;</p></td>');
+	document.writeln('<td class="menu" width="165" background="/images/menu4.gif"><p align="left">');
+}
+function untermenulink(name,link){
+	document.writeln('&nbsp;&nbsp;<a href="#" id="'+link+'" onclick=frameladen(this.id)>&#149; '+name+'</a><br>');
+}
+function untermenufuss(){
+	document.writeln('</td></tr>');
+}
+
+menu("all");
+frameladen(menu_current)
+function menu(num){
+	for(var i=0;i<untermenucount;i++)document.getElementById('cel' + i).style.display = 'none';
+	if(num!="all")document.getElementById('cel' + num).style.display = '';
+}
+
+function frameladen(site) {
+    menu_current=site;
+    var rawlink=site.split("?");
+    var link='/cgi-bin/'+rawlink[0]+'?{#sid#}&'+rawlink[1];
+    parent['main'].location.href = link;
+	for (var i = 0; i < document.getElementsByTagName('a').length; i++)
+		document.getElementsByTagName('a')[i].style.color = 'white';
+	document.getElementById(site).style.color = "red";
+}
+
+
+
+</script>
+<tr height="24">
+<td class="menu" width="25" background="/images/menu5.gif"><p>&nbsp;</p></td>
+<td class="menu" width="165" background="/images/menu4.gif"><p align="left"><a href="/cgi-bin/access.cgi?{#sid#}&action=logout" target="_parent">Logout</a></td>
+</tr>
+<tr>
+<td class="menu" width="25"><p>&nbsp;</p></td>
+<td class="menu" width="165" background="/images/menu4.gif" valign="bottom"><ul><p><font color="#6363C0">&copy; 2009 SSV</font></p></ul></td>
+</tr>
+</table>
+</body>
+</html>
+

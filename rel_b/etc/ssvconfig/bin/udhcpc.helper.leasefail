@@ -1,0 +1,60 @@
+#!/bin/sh
+#
+# global settings
+NETWORK_LEASEFAIL_WAIT=900
+NETWORK_MEDIASENSE_WAIT=3
+
+THIS="/etc/ssvconfig/bin/udhcpc.helper.leasefail"
+PID_FILE="/var/run/udhcpc.helper.pid"
+NETWORK_STARTED="/var/cache/network-started"
+DEV="eth0"
+
+[ "x$1" != "xJOB-${NETWORK_LEASEFAIL_WAIT}-${NETWORK_MEDIASENSE_WAIT}" ] && {
+# set current state
+    echo "down" > ${NETWORK_STARTED}-Down
+    mv ${NETWORK_STARTED}-Down ${NETWORK_STARTED}
+
+# fallback setup
+    #/sbin/ifconfig $interface 192.168.0.126 up
+    IFACE=$interface run-parts /etc/network/if-up.d
+
+# restart at background
+    sh $THIS JOB-${NETWORK_LEASEFAIL_WAIT}-${NETWORK_MEDIASENSE_WAIT} &
+    exit 0
+}
+# redirect STDOUT, STDERR
+exec 1>/dev/null
+exec 2>/dev/null
+
+#remove pid file on exit
+trap signal_handler SIGTERM
+signal_handler()
+{
+    rm -f ${PID_FILE}.$$
+    exit 0
+}
+
+L_sleep()
+{
+    filestat -$(($1*1000)),100 missing ${NETWORK_STARTED}
+}
+
+#save pid file
+echo $$ > ${PID_FILE}.$$
+
+LONGSLEEP=1
+#test for network cable
+while [ "x$(cat /sys/class/net/eth0/operstate)" = "xdown" ] ; do
+    LONGSLEEP=0
+    filestat -,250 loopeq /sys/class/net/eth0/operstate ${NETWORK_STARTED}
+done
+[ ${LONGSLEEP} -eq 0 ] && L_sleep ${NETWORK_MEDIASENSE_WAIT}
+[ ${LONGSLEEP} -eq 1 ] && L_sleep ${NETWORK_LEASEFAIL_WAIT}
+
+#remove our pid file
+rm -f ${PID_FILE}.$$
+
+#restart dhcp network
+ifdown ${DEV}
+sleep 1
+exec ifup ${DEV}

@@ -1,0 +1,53 @@
+#!/bin/sh
+
+# $Id: avahi-autoipd.action 1319 2006-09-04 18:10:26Z lennart $
+#
+# This file is part of avahi.
+# 
+# avahi is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# avahi is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+# License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with avahi; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+# USA.
+
+# Command line arguments:
+#   $1 event that happened:
+#          BIND:     Successfully claimed address
+#          CONFLICT: An IP address conflict happened
+#          UNBIND:   The IP address is no longer needed
+#          STOP:     The daemon is terminating
+#   $2 interface name
+#   $3 IP adddress
+
+#logger -t avahi-autoipd.action "started with $1"
+
+case "$1" in
+    BIND)
+	ifconfig "$2:auto" "$3" netmask 255.255.0.0 broadcast 169.254.255.255 up || exit 1
+	sleep 2
+	/etc/ssvconfig/init.d/tmdns start
+	/etc/ssvconfig/init.d/mgmtd start
+	/usr/local/sbin/upnphd -p /var/run/upnphd-$2:auto.pid -i $3 -n "$2:auto" >/dev/null 2>/dev/null
+	;;
+    CONFLICT|STOP|UNBIND)
+	kill `cat /var/run/upnphd-$2:auto.pid 2>/dev/null`
+	/etc/ssvconfig/init.d/mgmtd stop
+	/etc/ssvconfig/init.d/tmdns stop
+	ifconfig "$2:auto" down
+	;;
+    *)
+	echo "Unknown event $1" >&2
+	exit 1
+	;;
+esac
+
+exit 0

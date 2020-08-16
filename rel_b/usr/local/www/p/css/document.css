@@ -1,0 +1,79 @@
+@charset "utf-8";
+/* CSS Document */
+
+/**
+ * Document
+ *
+ * Definition von Standardelementen
+ */
+ 
+ @font-face {
+	font-family: Calibri;
+	src: url('fonts/Calibri.ttf');
+	font-weight: normal;
+	font-style: normal;
+
+}
+
+ 
+html, body {
+    background: #eeeeee url(images/body.png) repeat-y center;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Calibri,arial,verdana,sans-serif;
+	/*font-family: arial, verdana, sans-serif;*/
+    font-size: 15px;
+}
+
+ 
+*{
+	margin: 0px;
+	padding: 0px;
+	outline: none;
+}
+
+
+/* Bildlaufleiste im Firefox immer zeigen */
+html { overflow-y: scroll }
+
+img {
+	border: none;
+}
+
+/**
+ * Vordefinierte Klassen
+ */
+
+/* Abstand nach oben entfernen */
+.first{
+	margin-top: 0px;
+}
+
+/* Standard Abstand nach oben */
+.top-default{
+	margin-top: 16px;
+}
+
+/* Element ausblenden */
+.hidden{
+	display: none;
+}
+
+/* Trennlinie */
+.hr{
+	overflow: hidden;
+	height: 0px;
+	margin-top: 16px;
+	border-top: 1px solid #cccbc7;
+	font-size: 0px;
+	line-height: 0px;
+}
+
+
+div#right div.hr{
+	height: 5px;
+	border-top: 1px solid #df0a10;
+	margin: 8px 5px 0px 5px;
+}
+

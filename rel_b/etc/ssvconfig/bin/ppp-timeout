@@ -1,0 +1,59 @@
+#!/bin/sh
+# $1 = IDLE, $2 = MAX TIMEOUT
+
+. /etc/ssvconfig/bin/ssvfunction
+
+usage()
+{
+	echo "usage $0: [idletime] [maxtime]"
+	exit 1
+}
+
+test -n "$1" || usage
+test -n "$2" || usage
+
+A_TIDL=$1
+A_TMAX=$2
+
+test $A_TIDL -ne 0 || A_TIDL=-1
+test $A_TMAX -ne 0 || A_TMAX=-1
+
+#terminate ppp-watchdog
+killall -TERM ppp-watchdog >/dev/null 2>/dev/null
+
+DATE=$(date +%s)
+TIDL=$(($DATE+$A_TIDL))
+TMAX=$(($DATE+$A_TMAX))
+PPPSTAT_FILE="/proc/net/dev"
+MYEXIT_CMD='/etc/ssvconfig/init.d/modem stop2start'
+
+myexit()
+{
+	logger -t ppp-timeout "state $1 at exit"
+	[ $1 -eq 10 ] && sleep 10
+	[ $1 -eq 11 ] && sleep 5
+	exec $MYEXIT_CMD >/dev/null 2>/dev/null
+	exit 1
+}
+
+PPPSTAT=$(gawk '/ppp0:/ { print "RX:"$3"/""TX:"$11 ; exit 1 }' $PPPSTAT_FILE)
+[ $? -eq 1 ] || myexit 10
+
+while true ; do
+	DATE=$(date +%s)
+
+	[ $DATE -lt $TMAX -o $A_TMAX -eq -1 ] || myexit 12
+
+	PPPNOW=$(gawk '/ppp0:/ { print "RX:"$3"/""TX:"$11 ; exit 1 }' $PPPSTAT_FILE)
+	[ $? -eq 1 ] || myexit 11
+
+	if [ "$PPPNOW" != "$PPPSTAT" ] ; then
+		PPPSTAT=$PPPNOW
+		TIDL=$(($DATE+$A_TIDL))
+	fi
+	[ $DATE -lt $TIDL -o $A_TIDL -eq -1 ] || myexit 13
+
+	sleep 5
+done
+
+exit 0

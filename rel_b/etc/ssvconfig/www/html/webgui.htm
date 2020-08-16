@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<html><head>
+<base target="_self">
+<link rel="icon" type="image/ico" href="../favicon.ico">
+<link rel="shortcut icon" href="../favicon.ico">
+<link rel="stylesheet" type="text/css" href="../css/wui.css.css">
+<script language="JavaScript" src="../js/wui.functions.js"></script>
+<script language="JavaScript" src="../js/wui.menu.js"></script>
+<script type="text/javascript">
+if (parent.location.href != window.location.href)
+    parent.location.href = window.location.href;
+//document.write('<title>'+title+' SSV/WebUI</title>');
+
+/*window.setInterval('wui.ajax.dataSend("/cgi-bin/webgui.cgi?{#sid#}&action=timeout&html={#userid#}", "", ajax_cb);', 5000);
+function ajax_cb(r) {
+    r=parseInt(r);
+    if(r < 0) {
+	document.location.href='/cgi-bin/access.cgi?{#sid#}&action=logout';
+    } else {
+	var min=Math.floor(r/60);
+	var sec=Math.floor(r%60);
+	document.getElementById('timeout').innerHTML=(min<10?'0':'')+min+':'+(sec<10?'0':'')+sec;
+    }
+}*/
+</script>
+<title>{#hostname#} SSV/WebUI</title>
+</head>
+<!--<body onload="ajax_cb({#timeout#})" leftmargin="0" marginwidth="0" topmargin="0" marginheight="0">-->
+<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0">
+<table cellpadding="0" cellspacing="0" width="100%" height="100%">
+    <tr height="120">
+    <td width="489" background="/images/top1.gif">&nbsp;</td>
+    <td background="/images/top2.gif" align="right" valign="top">
+	<h2 style="color:white;margin:40px 10px 0px 0px;">
+	    <script type="text/javascript">document.write(title);</script>
+	</h2>
+    </td>
+    <td width="176" background="/images/top3.gif" align="left" valign="top">
+	<h2 style="color:white;margin:40px 0px 0px 0px;">SSV/WebUI</h2>
+	<div style="font-size:12px;color:#DDDDDD;margin:16px 0px 0px 0px;""><b><br>
+	    User: <span>{#user#}</span><br>
+	    <!--Logout in <span id="timeout" style="color:#0065CE">00:00</span> min.--></b>
+	</div>
+    </td>
+    </tr>
+    <tr height="100%">
+    <td colspan="3">
+    <table cellpadding="0" cellspacing="0" width="100%" height="100%">
+    <td width="190">
+    <iframe name="menu" src="webgui.cgi?{#sid#}&html=menu" frameborder="0" marginwidth="0" marginheight="0" height="100%" width="190" scrolling="no"></iframe>
+    </td>
+    <td>
+    <iframe name="main" src="" frameborder="0" marginwidth="0" marginheight="0" height="100%" width="100%" scrolling="auto"></iframe>
+    </td>
+    </tr>
+    </table>
+    </td>
+    </tr>
+</table>
+</body>
+</html>
+

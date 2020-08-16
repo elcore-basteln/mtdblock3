@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>{$page.name$}</title>
+<link rel="icon" type="image/ico" href="../css/images/favicon.ico">
+<link rel="shortcut icon" href="../css/images/favicon.ico">
+<link rel="stylesheet" href="../css/jquery.mobile.min.css" />
+<link rel="stylesheet" href="../css/user.css" />
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/wui.functions.js"></script>
+<script type="text/javascript" src="../js/jquery.mobile.min.js"></script>
+<script type="text/javascript">
+var url="fde_data.cgi?{#sid#}&action=get";
+var jds = new Array();
+jds.d = new Object();
+jds.f = new Object();
+function subscribe(id,v,f) {
+	if (!id || id == "") return;	/* exit if parameter empty */
+	jds.d[id] = v;
+	if(f) jds.f[id] = f;
+}
+function update(f, t){
+	$.get(url, f);
+	return setInterval(function(){$.get(url, f);}, t);
+}
+function init(){
+	update(ajax_cb, 5000);
+}
+function ajax_cb(r) {
+	var o=eval('('+r+')');
+	for (var v in jds.d) {
+		switch(typeof jds.f[v]) {
+		case "function": jds.f[v](o.data[jds.d[v]]); break;
+		case "number": document.getElementById(v).innerHTML = parseFloat(o.data[jds.d[v]]).toFixed(jds.f[v]-1); break;
+		default: document.getElementById(v).innerHTML = o.data[jds.d[v]]; break;
+		}
+	}
+}
+</script>
+</head>
+<body onload="init();">
+<div data-role="page" data-theme="c">
+	<div data-role="header" data-theme="a" class="wui-header">
+		<img src="../css/images/logo_mobil.png" />
+		<div class="ui-grid-b">
+		<div class="ui-block-a"><a data-role="none" href="webgui.cgi?{#sid#}&html=overview">{$menu.plant$}</a></div>
+		<div class="ui-block-b"><a data-role="none" href="#menu">{$menu.menu$}</a></div>
+		<div class="ui-block-c"><a data-role="none" href="#language">{$language$}&nbsp;<img src="../css/images/{#lang#}.png" class="ui-li-icon"></a></div>
+		</div>
+	</div>
+	
+	
+	
+	<div data-role="content">
+		<h3 style="margin-bottom:0px;">{$menu.overview$}</h3>
+		<div style="margin:5px 0px 5px 5px;font-size:12px;">{$menu.plant$} {#serial#}</div>
+		<ul id="overview" data-role="listview" data-inset="true" data-theme="a">
+			<li class="status">
+			<table >
+			<tr><td>{$overview.status$}</td><td>{$overview.error$}</td><td>{$overview.care$}</td></tr>
+			<tr><td id="VS1">---</td><td id="VS2">---</td><td id="VS3">---</td></tr>
+			</table>
+			<script type="text/javascript">
+			subscribe('VS1', 'elc.Systemstatus', function(v){
+				switch(v){
+				case "0": $("#VS1").html("{$status.down$}"); $("#VS1").css('background-color', '#FF0000'); break;
+				case "1": $("#VS1").html("{$status.run$}"); $("#VS1").css('background-color', '#00FF00'); break;
+				}});
+			subscribe('VS2', 'elc.Fehlerstatus', function(v){
+				switch(v){
+				case "0": $("#VS2").html("{$error.no$}"); $("#VS2").css('background-color', '#00FF00'); break;
+				case "1": $("#VS2").html("{$error.warning$}"); $("#VS2").css('background-color', '#FFFF00'); break;
+				case "2":  $("#VS2").html("{$error.error$}"); $("#VS2").css('background-color', '#FF0000'); break;
+				case "3":  $("#VS2").html("{$error.alert$}"); $("#VS2").css('background-color', '#FF0000'); break;
+				}});
+			subscribe('VS3', 'elc.Wartungsbedarf', function(v){
+				switch(v){
+				case "0": $("#VS3").html("{$care.no$}"); $("#VS3").css('background-color', '#00FF00'); break;
+				case "1": $("#VS3").html("{$care.yes$}"); $("#VS3").css('background-color', '#FFFF00'); break;
+				}});
+			</script>
+			</li>
+			<li>
+				<img src="../css/images/sym_voltage.png" />
+				<span class="ui-text">{$elc.P_Elektrisch_$}</span><span class="ui-unit">W</span><span class="ui-value" id="P_Elektrisch" >---</span><br />
+				<span class="ui-text">{$elc.E_Elektrisch_ge_$}</span><span class="ui-unit">kWh</span><span class="ui-value" id="E_Elektrisch_ge" >---</span><br />
+				<script type="text/javascript">
+					subscribe('P_Elektrisch','elc.P_Elektrisch',1);
+					subscribe('E_Elektrisch_ge','elc.E_Elektrisch_ge',1);
+				</script>
+			</li>
+			<li>
+				<img src="../css/images/sym_heat.png" />
+				<span class="ui-text">{$elc.P_Thermisch_$}</span><span class="ui-unit">W</span><span class="ui-value" id="P_Thermisch">---</span><br />
+				<span class="ui-text">{$elc.E_Thermisch_ges_$}</span><span class="ui-unit">kWh</span><span class="ui-value" id="E_Thermisch_ges">---</span><br />
+				<script type="text/javascript">
+					subscribe('P_Thermisch','elc.P_Thermisch',1);
+					subscribe('E_Thermisch_ges','elc.E_Thermisch_ges',1);
+				</script>
+			</li>
+			<li style="height:75px">
+				<img src="../css/images/sym_temperatur.png" />
+				<span class="ui-text">{$elc.TVorlauf_$}</span><span class="ui-unit">°C</span><span class="ui-value" id="TVorlauf">---</span><br />
+				<span class="ui-text">{$elc.TRuecklauf_$}</span><span class="ui-unit">°C</span><span class="ui-value" id="TRuecklauf">---</span><br />
+				<span class="ui-text">{$elc.TSpeicher_$}</span><span class="ui-unit">°C</span><span class="ui-value" id="TSpeicher">---</span><br />
+				<script type="text/javascript">
+					subscribe('TVorlauf','elc.TVorlauf',3);
+					subscribe('TRuecklauf','elc.TRuecklauf',3);
+					subscribe('TSpeicher','elc.TSpeicher',3);
+				</script>
+			</li>
+			<li>
+				<img src="../css/images/sym_op.png" />
+				<span class="ui-text">{$elc.Betr_h_akt_$}</span><span class="ui-unit">h</span><span class="ui-value" id="Betr_h_akt">---</span><br />
+				<span class="ui-text">{$elc.Betr_h_ges_$}</span><span class="ui-unit">h</span><span class="ui-value" id="Betr_h_ges">---</span><br />
+				<script type="text/javascript">
+					subscribe('Betr_h_akt','elc.Betr_h_akt',1);
+					subscribe('Betr_h_ges','elc.Betr_h_ges',1);
+				</script>
+			</li>
+			<li>
+				<img src="../css/images/sym_co2.png" />
+				<br />
+				<span class="ui-text">{$elc.CO2_einsparung$}</span><span class="ui-unit">kg</span><span class="ui-value" id="CO2_einsparung">---</span><br />
+				<script type="text/javascript">
+					subscribe('CO2_einsparung','elc.CO2_einsparung',3);
+				</script>
+			</li>
+		</ul>
+	</div>
+
+	<div data-role="footer" data-position="fixed" data-theme="b" class="wui-footer">
+		<div class="ui-grid-b">
+		<div class="ui-block-a"><a data-role="none" href="access.cgi?action=logout">{$menu.logout$}</a></div>
+		<div class="ui-block-b"><a data-role="none" href="#"></a></div>
+		<div class="ui-block-c"><a data-role="none" href="#"></a></div>
+		</div>
+	</div>
+</div>
+
+<div data-role="dialog" id="language">
+	<h3 style="margin-left:10px;">{$language$}</h3>
+	<ul data-role="listview" data-inset="true" style="width:90%;margin:auto" data-theme="a">
+		<li><a href="#" onclick="wui.set_lang('{#sid#}','de')"><img src="../css/images/de.png" class="ui-li-icon">{$language.de$}</a></li>
+		<li><a href="#" onclick="wui.set_lang('{#sid#}','gb')"><img src="../css/images/gb.png" class="ui-li-icon">{$language.gb$}</a></li>
+		<li data-theme="b"><a data-rel="back" href="#">{$action.back$}</a></li>
+	</ul>
+</div>
+<div data-role="dialog" id="menu">
+	<h3 style="margin-left:10px;">{$menu.menu$}</h3>
+	<ul data-role="listview" data-inset="true" style="width:90%;margin:auto" data-theme="a">
+		<li><a href="webgui.cgi?{#sid#}&html=overview">{$menu.overview$}</a></li>
+		<!--<li><a href="webgui.cgi?{#sid#}&html=archive">{$menu.archive$}</a></li>-->
+		<li><a href="webgui.cgi?{#sid#}&html=messages">{$menu.messages$}</a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=parameter">{$menu.config$}</a></li>
+		<li><a href="webgui.cgi?{#sid#}&html=data">{$menu.data$}</a></li>
+	</ul>
+	<br>
+	<ul data-role="listview" data-inset="true" style="width:90%;margin:auto" data-theme="a">
+		<li><a href="userconf.cgi?{#sid#}">{$userconf.chpass$}</a></li>
+	</ul>
+	<br>
+	<ul data-role="listview" data-inset="true" style="width:90%;margin:auto" data-theme="a">
+		<li data-theme="b"><a data-rel="back" href="#">{$action.back$}</a></li>
+        </ul>
+</div>
+</body>
+</html>
